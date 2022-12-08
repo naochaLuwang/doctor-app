@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 let filename = uuidv4() + "-" + new Date().getTime();
 const upload = multer({
   storage: multer.diskStorage({
-    destination: "./public/uploads/images/", // destination folder
+    destination: "https://doctor-app-alpha.vercel.app/public/uploads/images/", // destination folder
     filename: (req, file, cb) => cb(null, getFileName(file)),
   }),
 });
