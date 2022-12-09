@@ -14,6 +14,7 @@ import {
 import React, { useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
 import axios from "axios";
+import { useS3Upload } from "next-s3-upload";
 
 const Profile = ({ user, users }) => {
   const [firstName, setFirstName] = useState(user?.firstName || "");
@@ -25,15 +26,17 @@ const Profile = ({ user, users }) => {
   const [userImageFileName, setImageFileName] = useState(
     user?.profileImage || ""
   );
-  const [userImageFilePath, setImageFilePath] = useState(
-    user?.profileImagePath || ""
-  );
+  // const [userImageFilePath, setImageFilePath] = useState(
+  //   user?.profileImagePath || ""
+  // );
   const [webUrl, setWebUrl] = useState(user?.websiteUrl || "");
   const [location, setLocation] = useState("");
   const [bio, setBio] = useState(user?.bio || "");
   const [userNameError, setUserNameError] = useState("");
 
   const fileTypes = ["JPG", "PNG", "GIF"];
+
+  let { uploadToS3 } = useS3Upload();
 
   console.log(users);
 
@@ -51,24 +54,9 @@ const Profile = ({ user, users }) => {
     }
   };
 
-  const handleFile = async (file) => {
-    if (file) {
-      const fd = new FormData();
-      fd.append("myImage", file);
-      let res = await fetch("/api/uploadprofileimage", {
-        method: "POST",
-
-        body: fd,
-      });
-
-      let response = await res.json();
-      console.log(response);
-
-      if (response) {
-        setImageFileName(response.fileName.filename);
-        setImageFilePath(response.filePath);
-      }
-    }
+  const handleFileChange = async (file) => {
+    let { url } = await uploadToS3(file);
+    setImageFileName(url);
   };
 
   const handleUpdateProfile = async () => {
@@ -230,14 +218,14 @@ const Profile = ({ user, users }) => {
                 <Flex align="center">
                   <Avatar
                     name="Naocha Luwang"
-                    src={`${userImageFilePath}${userImageFileName}`}
+                    src={userImageFileName}
                     size="lg"
                   />
                   <Box ml={3}>
                     <FileUploader
                       name="file"
                       types={fileTypes}
-                      handleChange={handleFile}
+                      handleChange={handleFileChange}
                     />
                   </Box>
                 </Flex>

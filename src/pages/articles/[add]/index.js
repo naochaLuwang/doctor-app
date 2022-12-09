@@ -17,7 +17,6 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalFooter,
   ModalOverlay,
   Select,
   Spinner,
@@ -27,50 +26,47 @@ import {
   Text,
   Tooltip,
   useDisclosure,
-  VStack,
 } from "@chakra-ui/react";
+
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 
 import { AddIcon } from "@chakra-ui/icons";
+import Bold from "@tiptap/extension-bold";
+import BulletList from "@tiptap/extension-bullet-list";
+import Document from "@tiptap/extension-document";
+import { Image as Images } from "@tiptap/extension-image";
+import ListItem from "@tiptap/extension-list-item";
+import OrderedList from "@tiptap/extension-ordered-list";
+import Paragraph from "@tiptap/extension-paragraph";
+import Texts from "@tiptap/extension-text";
+import Typography from "@tiptap/extension-typography";
+import Underline from "@tiptap/extension-underline";
+import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import axios from "axios";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { BubbleMenu, useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Document from "@tiptap/extension-document";
-import Paragraph from "@tiptap/extension-paragraph";
-import Texts from "@tiptap/extension-text";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
-import ListItem from "@tiptap/extension-list-item";
-import Bold from "@tiptap/extension-bold";
-import Underline from "@tiptap/extension-underline";
-import { Image as Images } from "@tiptap/extension-image";
-import Typography from "@tiptap/extension-typography";
 
 import TextAlign from "@tiptap/extension-text-align";
 
-import Placeholder from "@tiptap/extension-placeholder";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
-import { FileUploader } from "react-drag-drop-files";
-import { useGlobalState } from "../../../components/Layout";
-import Heading from "../../../components/EditorButtons/Heading";
-import TypographyButtons from "../../../components/EditorButtons/Typography";
-import AlignmentButtons from "../../../components/EditorButtons/Alignment";
-import ListButtons from "../../../components/EditorButtons/List";
 import Blockquote from "@tiptap/extension-blockquote";
-import { useRef } from "react";
-import { BsBlockquoteLeft, BsImageFill } from "react-icons/bs";
 import Dropcursor from "@tiptap/extension-dropcursor";
 import Focus from "@tiptap/extension-focus";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import Placeholder from "@tiptap/extension-placeholder";
 import Youtube from "@tiptap/extension-youtube";
+import { useS3Upload } from "next-s3-upload";
+import { FileUploader } from "react-drag-drop-files";
+import { BsBlockquoteLeft, BsImageFill } from "react-icons/bs";
+import AlignmentButtons from "../../../components/EditorButtons/Alignment";
+import Heading from "../../../components/EditorButtons/Heading";
+import ListButtons from "../../../components/EditorButtons/List";
+import TypographyButtons from "../../../components/EditorButtons/Typography";
 import YoutubeButton from "../../../components/EditorButtons/Youtube";
+import { useGlobalState } from "../../../components/Layout";
 import Preview from "../../../components/Preview";
-import uploadlogo from "../../../../public/upload.svg";
 
 const Add = () => {
-  const [value, setValue] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState([]);
@@ -85,15 +81,12 @@ const Add = () => {
   const [addCategory, setAddCategory] = useState(false);
   const [addSubCategory, setAddSubCategory] = useState(false);
   const [active, setActive] = useGlobalState("active");
-  const [imageFile, setImageFile] = useState(null);
-  const [imageFileName, setImageFileName] = useState("");
-  const [imageFilePath, setImageFilePath] = useState("");
-  const [imageFlag, setImageFlag] = useState("N");
-  const [editorImageFileName, setEditorImageFileName] = useState("");
-  const [editorImageFilePath, setEditorImageFilePath] = useState("");
-  const [openImageModal, setImageOpenModal] = useState(false);
-  const [url, setUrl] = useState("");
 
+  const [imageUrl, setImageUrl] = useState("");
+  const [imageFlag, setImageFlag] = useState("N");
+  const [editorImageUrl, setEditorImageUrl] = useState("");
+
+  let { FileInput, openFileDialog, uploadToS3, files } = useS3Upload();
   const [topicError, setTopicEror] = useState(false);
 
   const { data: session, status } = useSession();
@@ -103,26 +96,18 @@ const Add = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const onImageModalOpen = () => {
-    setImageOpenModal(true);
+  const fileTypes = ["JPG", "PNG", "GIF"];
+
+  let handleFileChanges = async (file) => {
+    let { url } = await uploadToS3(file);
+    setImageUrl(url);
+    setImageFlag("Y");
   };
 
-  const onImageModalClose = () => {
-    setImageOpenModal(false);
-  };
-
-  const fileTypes = ["JPG", "PNG", "GIF", "JPEG"];
-
-  const setImage = () => {
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
-
-    const image = `${editorImageFilePath}${editorImageFileName}`;
-
-    editor.chain().focus().setImage({ src: image }).run();
-
-    onImageModalClose();
+  let handleFileChange = async (file) => {
+    let { url } = await uploadToS3(file);
+    setEditorImageUrl(url);
+    editor.chain().focus().setImage({ src: url }).run();
   };
 
   const editor = useEditor({
@@ -173,27 +158,19 @@ const Add = () => {
 
   const handlePreview = () => {
     onOpen();
-    // editor.setEditable(false);
   };
 
   const html = editor?.getHTML();
 
-  console.log(html);
-
   const json = editor?.getJSON();
-  console.log(json);
 
   const onCloses = () => {
     setIsOpen(false);
   };
 
-  const error = true;
-
   const router = useRouter();
 
   const articleId = router.query.add;
-
-  console.log(articleId);
 
   useEffect(() => {
     setActive("Add a new Article");
@@ -246,47 +223,6 @@ const Add = () => {
   const handleSubCategoryName = (e) => {
     setSubCategory("");
     setSubCategoryName(e.target.value);
-  };
-
-  const handleImageFile = async (file) => {
-    if (file) {
-      const fd = new FormData();
-      fd.append("myImage", file);
-      let res = await fetch("/api/uploadimage", {
-        method: "POST",
-
-        body: fd,
-      });
-
-      let response = await res.json();
-      console.log(response);
-
-      if (response) {
-        setEditorImageFileName(response.fileName.filename);
-        setEditorImageFilePath(response.filePath);
-      }
-    }
-  };
-
-  const handleFile = async (file) => {
-    if (file) {
-      const fd = new FormData();
-      fd.append("myImage", file);
-      let res = await fetch("/api/upload", {
-        method: "POST",
-
-        body: fd,
-      });
-
-      let response = await res.json();
-      console.log(response);
-
-      if (response) {
-        setImageFileName(response.fileName.filename);
-        setImageFilePath(response.filePath);
-        setImageFlag("Y");
-      }
-    }
   };
 
   useEffect(() => {
@@ -427,8 +363,7 @@ const Add = () => {
           articleContent: html,
           articleContentJson: json.content,
           statusId: 1,
-          imageFileName,
-          imageFilePath,
+          imageUrl,
           imageFlag,
           isPublished: "N",
           publishedDate: "",
@@ -497,8 +432,7 @@ const Add = () => {
           articleSubCatName: subCategoryResponse.data.subCategoryName,
           articleTitle: topic,
           imageFlag,
-          imageFileName,
-          imageFilePath,
+          imageUrl,
           articleSubtitle,
           articleContent: html,
           articleContentJson: json.content,
@@ -653,89 +587,16 @@ const Add = () => {
                       </Button>
                     </Tooltip>
 
-                    {/* <input
-                      style={{ display: "none" }}
-                      ref={inputRef}
-                      type="file"
-                      onChange={(e) => uploader(e)}
-                    /> */}
+                    <FileInput onChange={handleFileChange} />
 
                     <Button
                       size="sm"
-                      colorScheme="blue"
                       variant="outline"
-                      onClick={onImageModalOpen}
+                      colorScheme="blue"
+                      onClick={openFileDialog}
                     >
                       <Icon as={BsImageFill} w={6} h={6} />
                     </Button>
-
-                    <Modal
-                      isOpen={openImageModal}
-                      onClose={onImageModalClose}
-                      size="xl"
-                    >
-                      <ModalOverlay />
-                      <ModalContent>
-                        <ModalBody pt={8}>
-                          <VStack w="lg" mx="auto">
-                            <Input
-                              type="text"
-                              value={url}
-                              onChange={(e) => setUrl(e.target.value)}
-                              placeholder="Enter Image URL"
-                            />
-                            <Text
-                              fontWeight="semibold"
-                              fontSize="14pt"
-                              color="gray.500"
-                            >
-                              OR
-                            </Text>
-
-                            <Box>
-                              <Flex direction="column">
-                                <FileUploader
-                                  name="file"
-                                  types={fileTypes}
-                                  handleChange={handleImageFile}
-                                >
-                                  <Box
-                                    w={"lg"}
-                                    h="auto"
-                                    border="4px dashed"
-                                    borderRadius="xl"
-                                    shadow="md"
-                                    borderColor="gray.300"
-                                  >
-                                    <VStack mb={20}>
-                                      <Box position="relative" w={"48"} h="48">
-                                        <Image
-                                          src={uploadlogo}
-                                          alt="upload"
-                                          layout="fill"
-                                        />
-                                      </Box>
-                                      <Text position="absolute" bottom={20}>
-                                        Choose / Drop an image here
-                                      </Text>
-                                    </VStack>
-                                  </Box>
-                                </FileUploader>
-
-                                <Text mt={2} fontSize="8pt" width="100%">
-                                  {editorImageFileName}
-                                </Text>
-                              </Flex>
-                            </Box>
-                          </VStack>
-                        </ModalBody>
-                        <ModalFooter>
-                          <Button colorScheme="blue" onClick={setImage}>
-                            Set Image
-                          </Button>
-                        </ModalFooter>
-                      </ModalContent>
-                    </Modal>
 
                     <YoutubeButton editor={editor} />
                   </HStack>
@@ -910,12 +771,8 @@ const Add = () => {
                             <FileUploader
                               name="file"
                               types={fileTypes}
-                              handleChange={handleFile}
+                              handleChange={handleFileChanges}
                             />
-
-                            <Text mt={2} fontSize="8pt" width="100%">
-                              {imageFileName}
-                            </Text>
                           </Flex>
                         </Box>
                       </AccordionPanel>
@@ -1082,8 +939,7 @@ const Add = () => {
                   onClose={onClose}
                   topic={topic}
                   tags={tags}
-                  imageFileName={imageFileName}
-                  imageFilePath={imageFilePath}
+                  imageUrl={imageUrl}
                   imageFlag={imageFlag}
                   html={html}
                   json={json}

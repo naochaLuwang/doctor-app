@@ -49,6 +49,7 @@
     "next": "13.0.4",
     "next-auth": "^4.17.0",
     "next-connect": "^0.13.0",
+    "next-s3-upload": "^0.2.8",
     "nprogress": "^0.2.0",
     "prosemirror-model": "^1.18.3",
     "react": "18.2.0",

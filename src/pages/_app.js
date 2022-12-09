@@ -1,6 +1,6 @@
 import { ChakraProvider, LightMode } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
-import "react-quill/dist/quill.snow.css";
+
 import theme from "../chakra/theme";
 import Layout from "../components/Layout";
 

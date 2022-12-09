@@ -47,10 +47,8 @@ const articleSchema = new mongoose.Schema(
     imageFlag: {
       type: String,
     },
-    imageFilePath: {
-      type: String,
-    },
-    imageFile: {
+
+    imageUrl: {
       type: String,
     },
     tags: [

@@ -38,8 +38,8 @@ const Preview = ({
   onClose,
   topic,
   tags,
-  imageFileName,
-  imageFilePath,
+  imageUrl,
+
   imageFlag,
   html,
   json,
@@ -83,11 +83,7 @@ const Preview = ({
                 <VStack alignItems="start">
                   {imageFlag == "Y" && (
                     <Box position="relative" h={"60"} w="5xl">
-                      <Image
-                        src={`${imageFilePath}${imageFileName}`}
-                        alt="Banner Image"
-                        layout="fill"
-                      />
+                      <Image src={imageUrl} alt="Banner Image" layout="fill" />
                     </Box>
                   )}
                   <Heading>{topic}</Heading>

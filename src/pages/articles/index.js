@@ -135,7 +135,7 @@ const Articles = ({ articles, data, drArticles }) => {
                       <Flex flex="1" mr="10">
                         {article.imageFlag == "Y" && (
                           <Image
-                            src={`${article.imageFilePath}${article.imageFile}`}
+                            src={article.imageUrl}
                             alt="imageFlag"
                             htmlHeight="20px"
                             htmlWidth="150px"
