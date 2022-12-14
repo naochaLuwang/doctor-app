@@ -160,6 +160,13 @@ const articleSchema = new mongoose.Schema(
       },
     ],
 
+    favourites: [
+      {
+        regID: { type: Number },
+        createdDate: { type: Date },
+      },
+    ],
+
     createdBy: {
       type: String,
     },

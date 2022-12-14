@@ -2,16 +2,18 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { getSession, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DoctorMaster from "../../../models/DoctorMaster";
 import dbConnect from "../../../utils/db";
 import Account from "../../../components/Settings/Account";
 import Profile from "../../../components/Settings/Profile";
+import { useGlobalState } from "../../../components/Layout";
 
 const Setting = ({ data, usersResponse }) => {
   const [user, setUser] = useState(data);
 
   const [users, setUsers] = useState(usersResponse);
+  const [active, setActive] = useGlobalState("active");
 
   const { status, data: session } = useSession();
   const router = useRouter();
@@ -19,6 +21,11 @@ const Setting = ({ data, usersResponse }) => {
   if (status === "unauthenticated") {
     router.push("/signin");
   }
+
+  useEffect(() => {
+    setActive("Setting");
+  }, [setActive]);
+
   return (
     <>
       {status === "authenticated" && (

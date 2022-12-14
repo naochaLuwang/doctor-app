@@ -16,7 +16,7 @@ handler.put(async (req, res) => {
       title,
       bio,
       userImageFileName,
-      userImageFilePath,
+
       webUrl,
     } = req.body;
 
@@ -31,7 +31,7 @@ handler.put(async (req, res) => {
         lastName,
         title,
         bio,
-        profileImagePath: userImageFilePath,
+
         profileImage: userImageFileName,
         websiteUrl: webUrl,
       },

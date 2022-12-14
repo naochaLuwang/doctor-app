@@ -16,8 +16,7 @@ const doctorMasterSchema = new mongoose.Schema(
     lastName: { type: String },
     email: { type: String },
     tenantId: { type: Number },
-    profileImageFlag: { type: String },
-    profileImagePath: { type: String },
+
     profileImage: { type: String },
     bio: { type: String },
     websiteUrl: { type: String },

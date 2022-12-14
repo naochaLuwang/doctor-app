@@ -1,7 +1,6 @@
 import nc from "next-connect";
 import dbConnect from "../../../utils/db";
 import Article from "../../../models/Article";
-const { uuid } = require("uuidv4");
 
 const handler = nc();
 
@@ -29,10 +28,7 @@ handler.post(async (req, res) => {
       likedCount,
       createdBy,
       updatedBy,
-      likesArray,
-      viewedArray,
-      commentArray,
-      reportArray,
+
       tags,
     } = req.body;
 
@@ -57,12 +53,15 @@ handler.post(async (req, res) => {
       likedCount,
       createdBy,
       updatedBy,
-      likesArray,
-      viewedArray,
-      commentsArray: commentArray,
-      reportArray,
+
       isActive: "Y",
       tags,
+      favourite: [
+        {
+          regID: 0,
+          createdDate: new Date(),
+        },
+      ],
     });
 
     await newArticle.save();
@@ -79,8 +78,39 @@ handler.get(async (req, res) => {
     const articles = await Article.find({
       tenantId: 1,
       createdBy: "admin",
+      isActive: "Y",
     });
     res.status(200).json(articles);
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
+
+handler.put(async (req, res) => {
+  const { articleId } = req.body;
+  try {
+    const deleteArticle = await Article.findOneAndUpdate(
+      {
+        articleId: articleId,
+      },
+      {
+        isActive: "N",
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (deleteArticle) {
+      const articles = await Article.find({
+        tenantId: 1,
+        createdBy: "admin",
+        isActive: "Y",
+      });
+
+      console.log(articles);
+      res.status(200).json(articles);
+    }
   } catch (error) {
     res.status(500).json({ error: error });
   }

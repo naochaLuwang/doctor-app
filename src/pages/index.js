@@ -3,23 +3,15 @@ import React, { useEffect, useState } from "react";
 
 import { useRouter } from "next/router";
 import { useGlobalState } from "../components/Layout";
-import { Text } from "@chakra-ui/react";
-import { useS3Upload } from "next-s3-upload";
+import { Box, HStack, Text } from "@chakra-ui/react";
+import Clock from "react-live-clock";
 
-const Home = ({ article }) => {
-  const { status, data: session } = useSession();
-  let [imageUrl, setImageUrl] = useState();
-  let { FileInput, openFileDialog, uploadToS3 } = useS3Upload();
-
-  let handleFileChange = async (file) => {
-    let { url } = await uploadToS3(file);
-    setImageUrl(url);
-  };
-
+const Home = ({ session }) => {
+  const { status } = useSession();
   const [active, setActive] = useGlobalState("active");
+  const [firstName, setFirstName] = useGlobalState("firstName");
+  const [lastName, setLastName] = useGlobalState("lastName");
   const router = useRouter();
-
-  console.log(article);
 
   useEffect(() => {
     setActive("Home");
@@ -35,19 +27,22 @@ const Home = ({ article }) => {
     router.push("/signin");
   }
 
-  console.log(imageUrl);
-
   return (
     <>
       {status === "authenticated" && (
-        <div>
-          Home
-          {/* <FileInput onChange={handleFileChange} />
-
-          <button onClick={openFileDialog}>Upload file</button>
-
-          {imageUrl && <img src={imageUrl} />} */}
-        </div>
+        <Box py={2} px={4}>
+          <HStack>
+            <Text>
+              Welcome, Dr. {firstName} {lastName}
+            </Text>
+            <Clock
+              format={"HH:mm:ss"}
+              ticking={true}
+              timezone={"Asia/Kolkata"}
+              noSsr={true}
+            />
+          </HStack>
+        </Box>
       )}
     </>
   );
@@ -55,6 +50,7 @@ const Home = ({ article }) => {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  console.log(session);
   if (!session) {
     return {
       redirect: {

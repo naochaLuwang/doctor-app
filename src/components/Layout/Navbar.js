@@ -42,7 +42,7 @@ const Navbar = ({ title }) => {
   };
 
   return (
-    <Box display="flex" bg="white" px={4} py={2} h={12} shadow="base">
+    <Box display="flex" bg={"white"} px={4} py={2} h={12} shadow="base">
       <Flex
         align="center"
         flex={1}

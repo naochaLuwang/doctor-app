@@ -7,15 +7,37 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  HStack,
   Input,
   Text,
-  Textarea,
+  useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { FileUploader } from "react-drag-drop-files";
+import Bold from "@tiptap/extension-bold";
+import BulletList from "@tiptap/extension-bullet-list";
+import Document from "@tiptap/extension-document";
+import Focus from "@tiptap/extension-focus";
+import Heading from "@tiptap/extension-heading";
+import { Image as Images } from "@tiptap/extension-image";
+import ListItem from "@tiptap/extension-list-item";
+import OrderedList from "@tiptap/extension-ordered-list";
+import Paragraph from "@tiptap/extension-paragraph";
+import Placeholder from "@tiptap/extension-placeholder";
+import Texts from "@tiptap/extension-text";
+import TextAlign from "@tiptap/extension-text-align";
+import Typography from "@tiptap/extension-typography";
+import Underline from "@tiptap/extension-underline";
+import Youtube from "@tiptap/extension-youtube";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import axios from "axios";
 import { useS3Upload } from "next-s3-upload";
-
+import React, { useState } from "react";
+import { FileUploader } from "react-drag-drop-files";
+import AlignmentButtons from "../EditorButtons/Alignment";
+import Headings from "../EditorButtons/Heading";
+import ListButtons from "../EditorButtons/List";
+import TypographyButtons from "../EditorButtons/Typography";
+import YoutubeButton from "../EditorButtons/Youtube";
 const Profile = ({ user, users }) => {
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName);
@@ -38,7 +60,54 @@ const Profile = ({ user, users }) => {
 
   let { uploadToS3 } = useS3Upload();
 
+  const toast = useToast();
+
   console.log(users);
+
+  const editor = useEditor({
+    extensions: [
+      Document,
+      Paragraph.configure({
+        inline: true,
+      }),
+      Texts,
+      BulletList,
+      ListItem,
+      Bold,
+      Underline,
+      OrderedList,
+      Heading.configure({
+        levels: [1, 2, 3],
+      }),
+      Images,
+
+      Typography,
+      Focus.configure({
+        className: "has-focus",
+        mode: "all",
+      }),
+      Youtube.configure({
+        controls: false,
+      }),
+      Placeholder.configure({
+        placeholder: ({ node }) => {
+          if (node.type.name === "heading") {
+            return "Add a heading";
+          } else {
+            return "Write something";
+          }
+        },
+      }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+
+      StarterKit,
+    ],
+    autofocus: false,
+    content: user.bio,
+    editable: true,
+  });
 
   const handleUsernameChange = (e) => {
     if (users.length > 0) {
@@ -59,6 +128,8 @@ const Profile = ({ user, users }) => {
     setImageFileName(url);
   };
 
+  const html = editor?.getHTML();
+
   const handleUpdateProfile = async () => {
     const response = await axios.put("/api/profileupdate", {
       userId: user.userId,
@@ -66,18 +137,31 @@ const Profile = ({ user, users }) => {
       firstName: firstName,
       lastName: lastName,
       title,
-      bio,
-      userImageFilePath,
+      bio: html,
+
       userImageFileName,
       webUrl,
     });
 
-    console.log(response);
+    if (response) {
+      toast({
+        title: "Profile Updated Successfully",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+        position: "top-right",
+      });
+    }
   };
+
+  if (!editor) {
+    return null;
+  }
+
   return (
     <div style={{ width: "100%", height: "100vh" }}>
-      <Flex direction="column" pb={20}>
-        <Card width="100%" bg="white" shadow="md">
+      <Flex direction="column" pb={10} mt={3}>
+        <Card width="100%" bg="white" shadow="xl">
           <CardBody>
             <Flex direction="column">
               <Text fontSize="lg" fontWeight="bold">
@@ -292,31 +376,36 @@ const Profile = ({ user, users }) => {
                   onChange={(e) => setLocation(e.target.value)}
                 ></Input>
               </FormControl>
-              <FormControl>
-                <FormLabel>Bio</FormLabel>
-                <Textarea
-                  placeholder="A short Bio.."
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  _placeholder={{ color: "gray.500" }}
-                  _hover={{
-                    bg: "white",
-                    border: "1px solid",
-                    borderColor: "blue.500",
-                  }}
-                  _focus={{
-                    outline: "none",
-                    bg: "white",
-                    border: "1px solid",
-                    borderColor: "blue.500",
-                  }}
+              <Flex direction="column">
+                <Text>Bio</Text>
+                <Box>
+                  <HStack>
+                    <Headings editor={editor} />
+                    <TypographyButtons editor={editor} />
+                    <AlignmentButtons editor={editor} />
+                    <ListButtons editor={editor} />
+                    <YoutubeButton editor={editor} />
+                  </HStack>
+                </Box>
+                <Box
+                  border="1px solid blue"
+                  mt={5}
+                  maxH="52"
+                  w="100%"
+                  h={52}
+                  py={2}
                   bg="gray.50"
-                />
-              </FormControl>
+                  flex="1"
+                  overflowY="scroll"
+                  rounded="md"
+                >
+                  <EditorContent editor={editor} />
+                </Box>
+              </Flex>
             </Flex>
           </CardBody>
         </Card>
-        <Card width="100%" bg="white" shadow="md" mt={5}>
+        <Card width="100%" bg="white" shadow="md" mt={5} mb={20}>
           <CardBody>
             <Button
               width="100%"

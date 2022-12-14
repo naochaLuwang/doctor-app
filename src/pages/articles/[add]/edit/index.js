@@ -56,7 +56,7 @@ import TypographyButtons from "../../../../components/EditorButtons/Typography";
 import AlignmentButtons from "../../../../components/EditorButtons/Alignment";
 import ListButtons from "../../../../components/EditorButtons/List";
 import Blockquote from "@tiptap/extension-blockquote";
-import { useRef } from "react";
+
 import { BsBlockquoteLeft, BsImageFill } from "react-icons/bs";
 import Dropcursor from "@tiptap/extension-dropcursor";
 import Focus from "@tiptap/extension-focus";
@@ -65,7 +65,7 @@ import YoutubeButton from "../../../../components/EditorButtons/Youtube";
 import Preview from "../../../../components/Preview";
 import dbConnect from "../../../../utils/db";
 import Article from "../../../../models/Article";
-import { generateHTML } from "@tiptap/html";
+import { useS3Upload } from "next-s3-upload";
 
 const Edit = ({ article }) => {
   const [value, setValue] = useState("");
@@ -85,12 +85,11 @@ const Edit = ({ article }) => {
   const [addCategory, setAddCategory] = useState(false);
   const [addSubCategory, setAddSubCategory] = useState(false);
   const [active, setActive] = useGlobalState("active");
-  const [imageFile, setImageFile] = useState(null);
-  const [imageFileName, setImageFileName] = useState(article?.imageFile || "");
-  const [imageFilePath, setImageFilePath] = useState(
-    article?.imageFilePath || ""
-  );
+
+  const [imageUrl, setImageUrl] = useState(article?.imageUrl || "");
+
   const [imageFlag, setImageFlag] = useState(article?.imageFlag || "");
+  const [editorImageUrl, setEditorImageUrl] = useState("");
 
   const [topicError, setTopicEror] = useState(false);
 
@@ -103,31 +102,19 @@ const Edit = ({ article }) => {
 
   const fileTypes = ["JPG", "PNG", "GIF"];
 
-  const inputRef = useRef(null);
+  let { FileInput, openFileDialog, uploadToS3, files } = useS3Upload();
 
-  const handleImage = () => {
-    inputRef.current.click();
+  let handleFileChanges = async (file) => {
+    let { url } = await uploadToS3(file);
+    setImageUrl(url);
+    setImageFlag("Y");
   };
 
-  function useDisplayImage() {
-    const [result, setResult] = React.useState("");
-
-    function uploader(e) {
-      const imageFile = e.target.files[0];
-
-      const reader = new FileReader();
-      reader.addEventListener("load", (e) => {
-        setResult(e.target.result);
-        editor.chain().focus().setImage({ src: e.target.result }).run();
-      });
-
-      reader.readAsDataURL(imageFile);
-    }
-
-    return { result, uploader };
-  }
-
-  const { result, uploader } = useDisplayImage();
+  let handleFileChange = async (file) => {
+    let { url } = await uploadToS3(file);
+    setEditorImageUrl(url);
+    editor.chain().focus().setImage({ src: url }).run();
+  };
 
   const editor = useEditor({
     extensions: [
@@ -275,48 +262,6 @@ const Edit = ({ article }) => {
     getCategories();
   }, []);
 
-  const likesArray = [
-    {
-      regId: "",
-      firstName: "",
-      lastName: "",
-      genderCode: "",
-      imageUrl: "",
-      longitude: "",
-      latitude: "",
-      address: "",
-      statusId: "",
-      statusName: "",
-      custom1: "",
-      custom2: "",
-      createdAt: "",
-      updatedAt: "",
-      tenantId: "",
-      isActive: "",
-    },
-  ];
-
-  const viewedArray = [
-    {
-      regId: "",
-      firstName: "",
-      lastName: "",
-      genderCode: "",
-      imageUrl: "",
-      longitude: "",
-      latitude: "",
-      address: "",
-      statusId: "",
-      statusName: "",
-      custom1: "",
-      custom2: "",
-      createdAt: "",
-      updatedAt: "",
-      tenantId: "",
-      isActive: "",
-    },
-  ];
-
   const onHandleSubmit = async (e) => {
     e.preventDefault();
     setIsOpen(true);
@@ -364,8 +309,7 @@ const Edit = ({ article }) => {
           articleContent: html,
           articleContentJson: json.content,
           statusId: 1,
-          imageFileName,
-          imageFilePath,
+          imageUrl,
           imageFlag,
           isPublished: "N",
           publishedDate: "",
@@ -379,7 +323,6 @@ const Edit = ({ article }) => {
 
         if (newArticleResponse) {
           router.push("/articles");
-          setIsOpen(false);
         }
       }
     } catch (error) {
@@ -432,8 +375,7 @@ const Edit = ({ article }) => {
           articleSubCatName: subCategoryResponse.data.subCategoryName,
           articleTitle: topic,
           imageFlag,
-          imageFileName,
-          imageFilePath,
+          imageUrl,
           articleSubtitle,
           articleContent: html,
           articleContentJson: json.content,
@@ -449,7 +391,6 @@ const Edit = ({ article }) => {
         });
 
         router.push("/articles");
-        setIsOpen(false);
       }
     } catch (error) {
       console.log(error);
@@ -584,18 +525,13 @@ const Edit = ({ article }) => {
                       </Button>
                     </Tooltip>
 
-                    <input
-                      style={{ display: "none" }}
-                      ref={inputRef}
-                      type="file"
-                      onChange={(e) => uploader(e)}
-                    />
+                    <FileInput onChange={handleFileChange} />
 
                     <Button
                       size="sm"
-                      colorScheme="blue"
                       variant="outline"
-                      onClick={handleImage}
+                      colorScheme="blue"
+                      onClick={openFileDialog}
                     >
                       <Icon as={BsImageFill} w={6} h={6} />
                     </Button>
@@ -772,11 +708,11 @@ const Edit = ({ article }) => {
                             <FileUploader
                               name="file"
                               types={fileTypes}
-                              handleChange={handleFile}
+                              handleChange={handleFileChanges}
                             />
 
                             <Text mt={2} fontSize="8pt" width="100%">
-                              {imageFileName}
+                              {imageUrl}
                             </Text>
                           </Flex>
                         </Box>
@@ -944,8 +880,7 @@ const Edit = ({ article }) => {
                   onClose={onClose}
                   topic={topic}
                   tags={tags}
-                  imageFileName={imageFileName}
-                  imageFilePath={imageFilePath}
+                  imageUrl
                   imageFlag={imageFlag}
                   html={html}
                   json={json}

@@ -1,10 +1,11 @@
 import { Box, Flex, Icon, Stack, Text } from "@chakra-ui/react";
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/legacy/image";
+
 import React, { useState } from "react";
 import { AiFillHome } from "react-icons/ai";
 import { RiArticleFill } from "react-icons/ri";
+import { BsFillChatLeftDotsFill } from "react-icons/bs";
 import { useGlobalState } from ".";
 import { useRouter } from "next/router";
 
@@ -15,12 +16,13 @@ const Sidebar = ({ open }) => {
     <Box
       width={open ? "240px" : "64px"}
       transition={open ? "width 400ms ease-out" : "width 100ms linear"}
-      bg="white"
+      bg={"white"}
       boxShadow="lg"
+      shadow="xl"
       height="100vh"
       py={2}
       px={3}
-      display={{ base: "none", lg: "block" }}
+      display={active === "Chat" ? "none" : "block"}
     >
       <Box
         display="flex"
@@ -81,7 +83,7 @@ const Sidebar = ({ open }) => {
           cursor="pointer"
           justifyContent={!open && "center"}
           width={open ? "220px" : "64px"}
-          mb={3}
+          mb={2}
           p={2}
           _hover={{
             bg: active === "Article" ? "purple.100" : "purple.50",
@@ -103,6 +105,36 @@ const Sidebar = ({ open }) => {
             // color="gray.600"
           >
             Articles
+          </Text>
+        </Box>
+
+        <Box
+          display="flex"
+          alignItems="center"
+          cursor="pointer"
+          justifyContent={!open && "center"}
+          width={open ? "220px" : "64px"}
+          mb={3}
+          p={2}
+          _hover={{
+            bg: active === "Article" ? "purple.100" : "purple.50",
+            rounded: "lg",
+            color: active === "Article" ? "gray.600" : "purple.400",
+          }}
+          onClick={() => {
+            router.push("/chat");
+          }}
+          bg={active === "Chat" ? "purple.100" : "none"}
+          rounded="lg"
+        >
+          <Icon as={BsFillChatLeftDotsFill} w={6} h={6} color="purple.400" />
+          <Text
+            display={open ? "inline-flex" : "none"}
+            fontSize="11pt"
+            ml={2}
+            // color="gray.600"
+          >
+            Chats
           </Text>
         </Box>
       </Flex>

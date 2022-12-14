@@ -17,6 +17,7 @@ import {
   TagLabel,
   Text,
   VStack,
+  Center,
 } from "@chakra-ui/react";
 import { getSession, useSession } from "next-auth/react";
 
@@ -56,6 +57,14 @@ const Articles = ({ articles, data, drArticles }) => {
   const addNewArticle = () => {
     const id = uuid();
     router.push(`/articles/${id}`);
+  };
+
+  const handleDelete = async (articleId) => {
+    const response = await axios.put("/api/article", {
+      articleId,
+    });
+
+    setArticlesList(response.data);
   };
 
   if (status === "unauthenticated") {
@@ -248,11 +257,7 @@ const Articles = ({ articles, data, drArticles }) => {
                               fontSize="12pt"
                               fontWeight="medium"
                               bg="white"
-                              // onClick={() => {
-                              //   router.push(
-                              //     `/articles/${article.articleId}/edit`
-                              //   );
-                              // }}
+                              onClick={() => handleDelete(article.articleId)}
                             >
                               Delete
                             </MenuItem>
@@ -266,7 +271,7 @@ const Articles = ({ articles, data, drArticles }) => {
             </Box>
           )}
 
-          {!articleStatus && draftArticles.length > 0 && (
+          {!articleStatus && draftArticles.length > 0 ? (
             <Box
               mt={5}
               width="100%"
@@ -422,6 +427,10 @@ const Articles = ({ articles, data, drArticles }) => {
                 </Card>
               ))}
             </Box>
+          ) : (
+            <Center>
+              <Text>No draft</Text>
+            </Center>
           )}
         </Box>
       </>
@@ -448,7 +457,8 @@ export async function getServerSideProps(context) {
     createdBy: session?.user.name,
     tenantId: user?.tenantId,
     isPublished: "Y",
-  }).sort({ updatedAt: -1 });
+    isActive: "Y",
+  }).sort({ createdAt: -1 });
 
   console.log(publishedArticles);
 
@@ -456,6 +466,7 @@ export async function getServerSideProps(context) {
     createdBy: session?.user.name,
     tenantId: user?.tenantId,
     isPublished: "N",
+    isActive: "Y",
   });
 
   return {

@@ -229,93 +229,6 @@ const Add = () => {
     getCategories();
   }, []);
 
-  const likesArray = [
-    {
-      regId: 0,
-      firstName: "",
-      lastName: "",
-      genderCode: "",
-      imageUrl: "",
-      longitude: "",
-      latitude: "",
-      address: "",
-      statusId: 0,
-      statusName: "",
-      custom1: "",
-      custom2: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      tenantId: tenantId,
-      isActive: "",
-    },
-  ];
-
-  const viewedArray = [
-    {
-      regId: 0,
-      firstName: "",
-      lastName: "",
-      genderCode: "",
-      imageUrl: "",
-      longitude: "",
-      latitude: "",
-      address: "",
-      statusId: 0,
-      statusName: "",
-      custom1: "",
-      custom2: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      tenantId: tenantId,
-      isActive: "",
-    },
-  ];
-
-  const commentArray = [
-    {
-      regId: 0,
-      firstName: "",
-      lastName: "",
-      genderCode: "",
-      imageUrl: "",
-      longitude: "",
-      latitude: "",
-      address: "",
-      statusId: 0,
-      statusName: "",
-      comment: "",
-      custom1: "",
-      custom2: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      tenantId: tenantId,
-      isActive: "",
-    },
-  ];
-
-  const reportArray = [
-    {
-      regId: 0,
-      firstName: "",
-      lastName: "",
-      genderCode: "",
-      imageUrl: "",
-      longitude: "",
-      latitude: "",
-      address: "",
-      statusId: 0,
-      statusName: "",
-      report: "",
-      comment: "",
-      custom1: "",
-      custom2: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      tenantId: tenantId,
-      isActive: "",
-    },
-  ];
-
   const onHandleSubmit = async (e) => {
     e.preventDefault();
     setIsOpen(true);
@@ -371,10 +284,7 @@ const Add = () => {
           likedCount: 0,
           createdBy: userName,
           updatedBy: userName,
-          likesArray,
-          viewedArray,
-          commentArray,
-          reportArray,
+
           tags,
         });
 
@@ -443,10 +353,7 @@ const Add = () => {
           likedCount: 0,
           createdBy: userName,
           updatedBy: userName,
-          likesArray,
-          viewedArray,
-          commentArray,
-          reportArray,
+
           tags,
         });
 

@@ -24,7 +24,7 @@ const SignIn = () => {
             display={{ base: "none", md: "inline-flex" }}
           ></Box>
           {/* right */}
-          <Flex flex="1" align="center" justify="center">
+          <Flex flex="1" align="center" justify="center" bg="white">
             <Flex
               width="400px"
               align="start"

@@ -44,6 +44,7 @@ const Login = () => {
         title: message,
         status: "error",
         duration: 9000,
+        position: "top-right",
         isClosable: true,
       });
       setLoading(false);

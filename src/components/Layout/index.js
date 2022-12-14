@@ -52,13 +52,15 @@ const Layout = ({ children }) => {
   return (
     <>
       {status === "authenticated" && (
-        <Flex>
-          <Sidebar open={open} />
-          <Flex flex={1} bg="WhiteAlpha.200" direction="column">
-            <Navbar title={active} />
-            <div>{children}</div>
+        <Box width="100vw" height="100vh" overflow="hidden">
+          <Flex overflow="hidden">
+            <Sidebar open={open} />
+            <Flex flex={1} bg="WhiteAlpha.200" direction="column">
+              <Navbar title={active} />
+              <div>{children}</div>
+            </Flex>
           </Flex>
-        </Flex>
+        </Box>
       )}
     </>
   );
