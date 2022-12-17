@@ -42,7 +42,7 @@ const Navbar = ({ title }) => {
   };
 
   return (
-    <Box display="flex" bg={"white"} px={4} py={2} h={12} shadow="base">
+    <Box display="flex" bg={"gray.50"} px={4} py={2} h={12}>
       <Flex
         align="center"
         flex={1}
@@ -58,7 +58,7 @@ const Navbar = ({ title }) => {
           onClick={handleSidebar}
         />
 
-        <Text ml={2} fontSize="12pt" fontWeight="bold">
+        <Text ml={2} fontSize="12pt" fontWeight="bold" color="gray.600">
           {title}
         </Text>
       </Flex>

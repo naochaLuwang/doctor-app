@@ -22,7 +22,7 @@ const Sidebar = ({ open }) => {
       height="100vh"
       py={2}
       px={3}
-      display={active === "Chat" ? "none" : "block"}
+      // display={active === "Chat" ? "none" : "block"}
     >
       <Box
         display="flex"
@@ -57,21 +57,37 @@ const Sidebar = ({ open }) => {
           justifyContent={!open && "center"}
           width={open ? "220px" : "64px"}
           mb={1}
-          p={2}
+          px={2}
           cursor="pointer"
           _hover={{
-            bg: active === "Home" ? "purple.100" : "purple.50",
             rounded: "lg",
-            color: active === "Home" ? "gray.600" : "purple.400",
+            color: "purple.400",
+            fontWeight: "semibold",
           }}
+          color={active === "Home" ? "purple.400" : "gray.600"}
+          fontWeight={active === "Home" ? "semibold" : "base"}
           onClick={() => {
             router.push("/");
             setActive("Home");
           }}
-          bg={active === "Home" ? "purple.100" : "none"}
-          rounded="lg"
         >
-          <Icon as={AiFillHome} w={6} h={6} color="purple.400" />
+          <Box
+            px="10px"
+            py="8px"
+            _hover={{
+              bg: active === "Home" ? "purple.100" : "purple.50",
+              rounded: "lg",
+              color: active === "Home" ? "gray.600" : "purple.400",
+            }}
+            bg={active === "Home" ? "purple.100" : "none"}
+            rounded="lg"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Icon as={AiFillHome} w={6} h={6} color="purple.400" />
+          </Box>
+
           <Text display={open ? "inline-flex" : "none"} fontSize="11pt" ml={2}>
             Home
           </Text>
@@ -80,24 +96,39 @@ const Sidebar = ({ open }) => {
         <Box
           display="flex"
           alignItems="center"
-          cursor="pointer"
           justifyContent={!open && "center"}
           width={open ? "220px" : "64px"}
-          mb={2}
-          p={2}
+          mb={1}
+          px={2}
+          cursor="pointer"
           _hover={{
-            bg: active === "Article" ? "purple.100" : "purple.50",
             rounded: "lg",
-            color: active === "Article" ? "gray.600" : "purple.400",
+            color: "purple.400",
+            fontWeight: "semibold",
           }}
+          color={active === "Article" ? "purple.400" : "gray.600"}
+          fontWeight={active === "Article" ? "semibold" : "base"}
           onClick={() => {
             router.push("/articles");
             setActive("Article");
           }}
-          bg={active === "Article" ? "purple.100" : "none"}
-          rounded="lg"
         >
-          <Icon as={RiArticleFill} w={6} h={6} color="purple.400" />
+          <Box
+            px="10px"
+            py="8px"
+            _hover={{
+              bg: active === "Article" ? "purple.100" : "purple.50",
+              rounded: "lg",
+              color: active === "Article" ? "gray.600" : "purple.400",
+            }}
+            bg={active === "Article" ? "purple.100" : "none"}
+            rounded="lg"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Icon as={RiArticleFill} w={6} h={6} color="purple.400" />
+          </Box>
           <Text
             display={open ? "inline-flex" : "none"}
             fontSize="11pt"
@@ -111,23 +142,39 @@ const Sidebar = ({ open }) => {
         <Box
           display="flex"
           alignItems="center"
-          cursor="pointer"
           justifyContent={!open && "center"}
           width={open ? "220px" : "64px"}
-          mb={3}
-          p={2}
+          mb={1}
+          px={2}
+          cursor="pointer"
           _hover={{
-            bg: active === "Article" ? "purple.100" : "purple.50",
             rounded: "lg",
-            color: active === "Article" ? "gray.600" : "purple.400",
+            color: "purple.400",
+            fontWeight: "semibold",
           }}
+          color={active === "Chat" ? "purple.400" : "gray.600"}
+          fontWeight={active === "Chat" ? "semibold" : "base"}
           onClick={() => {
             router.push("/chat");
           }}
-          bg={active === "Chat" ? "purple.100" : "none"}
-          rounded="lg"
         >
-          <Icon as={BsFillChatLeftDotsFill} w={6} h={6} color="purple.400" />
+          <Box
+            px="10px"
+            py="8px"
+            _hover={{
+              bg: active === "Chat" ? "purple.100" : "purple.50",
+              rounded: "lg",
+              color: active === "Chat" ? "gray.600" : "purple.400",
+            }}
+            bg={active === "Chat" ? "purple.100" : "none"}
+            rounded="lg"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Icon as={BsFillChatLeftDotsFill} w={6} h={6} color="purple.400" />
+          </Box>
+
           <Text
             display={open ? "inline-flex" : "none"}
             fontSize="11pt"

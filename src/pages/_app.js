@@ -8,7 +8,13 @@ import Router from "next/router";
 
 import NProgress from "nprogress";
 
-import "nprogress/nprogress.css"; //styles of nprogress
+import "nprogress/nprogress.css";
+import TimeAgo from "javascript-time-ago";
+//styles of nprogress
+
+import en from "javascript-time-ago/locale/en.json";
+
+TimeAgo.addDefaultLocale(en);
 
 Router.events.on("routeChangeStart", () => NProgress.start());
 

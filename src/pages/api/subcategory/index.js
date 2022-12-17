@@ -19,6 +19,10 @@ handler.post(async (req, res) => {
       updatedBy,
     } = req.body;
 
+    if (subCategoryName === "") {
+      throw new Error("Please choose subcategory");
+    }
+
     const subCategory = await ArticleSubCategory.findOne({
       tenantId: tenantId,
       subCategoryName: subCategoryName,

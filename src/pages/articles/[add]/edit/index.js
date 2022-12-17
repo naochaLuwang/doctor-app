@@ -68,7 +68,6 @@ import Article from "../../../../models/Article";
 import { useS3Upload } from "next-s3-upload";
 
 const Edit = ({ article }) => {
-  const [value, setValue] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const [category, setCategory] = useState(article?.articleCatName);
   const [categories, setCategories] = useState([]);
@@ -235,27 +234,6 @@ const Edit = ({ article }) => {
   const handleSubCategoryName = (e) => {
     setSubCategory("");
     setSubCategoryName(e.target.value);
-  };
-
-  const handleFile = async (file) => {
-    if (file) {
-      const fd = new FormData();
-      fd.append("myImage", file);
-      let res = await fetch("/api/upload", {
-        method: "POST",
-
-        body: fd,
-      });
-
-      let response = await res.json();
-      console.log(response);
-
-      if (response) {
-        setImageFileName(response.fileName.filename);
-        setImageFilePath(response.filePath);
-        setImageFlag("Y");
-      }
-    }
   };
 
   useEffect(() => {

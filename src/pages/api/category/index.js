@@ -18,6 +18,10 @@ handler.post(async (req, res) => {
       updatedBy,
     } = req.body;
 
+    if (categoryName === "") {
+      throw new Error("Please choose category");
+    }
+
     const categories = await ArticleCategory.find({ tenantId: tenantId });
 
     const catId = categories.length + 1;

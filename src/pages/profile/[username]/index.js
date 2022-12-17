@@ -137,9 +137,14 @@ const Profile = ({ data }) => {
                   </VStack>
                 </Flex>
 
-                <Box mt={2}>
+                {/* <Box mt={2}>
                   <EditorContent editor={editor} />
-                </Box>
+                </Box> */}
+                <Box
+                  dangerouslySetInnerHTML={{
+                    __html: user.bio,
+                  }}
+                ></Box>
               </CardBody>
             </Card>
           </Box>

@@ -5,13 +5,13 @@ const registrationSchema = new mongoose.Schema(
     RegUid: {
       type: String,
     },
-    RegId: {
+    RegID: {
       type: Number,
     },
     isActive: {
       type: String,
     },
-    TenantId: {
+    TenantID: {
       type: Number,
     },
     TokenNo: {

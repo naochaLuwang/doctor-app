@@ -8,30 +8,37 @@ import Registration from "../models/Regsitration";
 import Chat from "../models/Chat";
 import dbConnect from "../utils/db";
 import { useGlobalState } from "../components/Layout";
+import ChatProfile from "../components/Chat/ChatProfile";
 
 const ChatPage = ({ user, users, chatData }) => {
-  const [regId, setRegId] = useState();
+  const [regId, setRegId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [message, setMessage] = useState("");
-  const [chat, setChat] = useState(null);
+  const [chat, setChat] = useState([]);
   const [active, setActive] = useGlobalState("active");
   const [newChat, setNewChat] = useState(false);
   const [chats, setChats] = useState(chatData);
-  // const [messages, setMessages] = useState([]);
+  const [profileOpen, setprofileOpen] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [chatId, setChatId] = useState(null);
+  const [userId, setUserId] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   let socket;
 
   useEffect(() => {
     setActive("Chat");
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setActive]);
 
-  console.log(user);
+  console.log("ChatId", chatId);
+
   return (
     <Box
       width="100%"
-      bg="gray.200"
+      bg="gray.50"
       height="92vh"
       overflow="hidden"
       px={6}
@@ -49,6 +56,10 @@ const ChatPage = ({ user, users, chatData }) => {
           setChat={setChat}
           newChat={newChat}
           setNewChat={setNewChat}
+          setChatId={setChatId}
+          setUserId={setUserId}
+          setChats={setChats}
+          setIsChatOpen={setIsChatOpen}
         />
         <ChatRight
           regId={regId}
@@ -62,7 +73,22 @@ const ChatPage = ({ user, users, chatData }) => {
           setNewChat={setNewChat}
           setChats={setChats}
           socket={socket}
+          profileOpen={profileOpen}
+          setprofileOpen={setprofileOpen}
+          setProfile={setProfile}
+          chatId={chatId}
+          userId={userId}
+          isChatOpen={isChatOpen}
+          setIsChatOpen={setIsChatOpen}
         />
+
+        {profileOpen && (
+          <ChatProfile
+            profileOpen={profileOpen}
+            setprofileOpen={setprofileOpen}
+            profile={profile}
+          />
+        )}
       </Flex>
     </Box>
   );

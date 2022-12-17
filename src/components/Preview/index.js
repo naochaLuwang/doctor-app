@@ -14,23 +14,18 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import Focus from "@tiptap/extension-focus";
+import { Image as Images } from "@tiptap/extension-image";
+import Typography from "@tiptap/extension-typography";
+import Underline from "@tiptap/extension-underline";
 import { EditorContent } from "@tiptap/react";
 import Image from "next/image";
 import React from "react";
-import Document from "@tiptap/extension-document";
-import Paragraph from "@tiptap/extension-paragraph";
-import { Text as Texts } from "@tiptap/extension-text";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
-import ListItem from "@tiptap/extension-list-item";
-import Bold from "@tiptap/extension-bold";
-import Underline from "@tiptap/extension-underline";
-import { Image as Images } from "@tiptap/extension-image";
-import Typography from "@tiptap/extension-typography";
 
 import TextAlign from "@tiptap/extension-text-align";
 
 import { Editor } from "@tiptap/core";
+import Youtube from "@tiptap/extension-youtube";
 import StarterKit from "@tiptap/starter-kit";
 
 const Preview = ({
@@ -47,23 +42,29 @@ const Preview = ({
 }) => {
   const editor = new Editor({
     extensions: [
-      StarterKit,
-      Document,
-      Paragraph,
-      Texts,
-      Images,
-      Bold,
       Underline,
-      TextAlign,
-      BulletList,
-      OrderedList,
-      ListItem,
+
+      Images,
+
       Typography,
+      Youtube,
 
-      // add more extensions here
+      Focus.configure({
+        className: "has-focus",
+        mode: "all",
+      }),
+
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
+      }),
     ],
-
-    content: json,
+    autofocus: true,
+    content: html,
     editable: false,
   });
   return (

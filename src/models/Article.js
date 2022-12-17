@@ -160,7 +160,7 @@ const articleSchema = new mongoose.Schema(
       },
     ],
 
-    favourites: [
+    favourite: [
       {
         regID: { type: Number },
         createdDate: { type: Date },

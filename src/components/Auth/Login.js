@@ -35,13 +35,11 @@ const Login = () => {
     let options = { redirect: false, userName, password };
     const res = await signIn("credentials", options);
 
-    setMessage(null);
-
     if (res?.error) {
       setMessage(res.error);
       console.log(message);
       toast({
-        title: message,
+        title: res.error,
         status: "error",
         duration: 9000,
         position: "top-right",
@@ -87,7 +85,7 @@ const Login = () => {
                 border: "1px solid",
                 borderColor: "blue.500",
               }}
-              bg="gray.50"
+              bg="gray.100"
               value={userName}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -116,7 +114,7 @@ const Login = () => {
                 border: "1px solid",
                 borderColor: "blue.500",
               }}
-              bg="gray.50"
+              bg="gray.100"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

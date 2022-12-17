@@ -53,7 +53,7 @@ handler.put(async (req, res) => {
         isPublished,
         publishedDate,
         imageUrl,
-        imageFileName,
+        imageFlag,
         publishedBy,
         likedCount,
         createdBy,

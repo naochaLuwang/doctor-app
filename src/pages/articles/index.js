@@ -18,6 +18,12 @@ import {
   Text,
   VStack,
   Center,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
 } from "@chakra-ui/react";
 import { getSession, useSession } from "next-auth/react";
 
@@ -36,6 +42,9 @@ import EmptyArticle from "../../components/EmptyArticle";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { HiThumbUp, HiEye } from "react-icons/hi";
 import axios from "axios";
+import ArticleModal from "../../components/Modal";
+import { ChatIcon, CheckIcon } from "@chakra-ui/icons";
+import ReactTimeAgo from "react-time-ago";
 
 const Articles = ({ articles, data, drArticles }) => {
   const [active, setActive] = useGlobalState("active");
@@ -43,6 +52,9 @@ const Articles = ({ articles, data, drArticles }) => {
   const [articlesList, setArticlesList] = useState(articles);
   const [draftArticles, setDraftArticles] = useState(drArticles);
   const [articleStatus, setArticleStatus] = useState(true);
+  const [likesOpen, setLikeOpen] = useState(false);
+  const [viewsOpen, setViewsOpen] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
 
   const router = useRouter();
 
@@ -59,6 +71,18 @@ const Articles = ({ articles, data, drArticles }) => {
     router.push(`/articles/${id}`);
   };
 
+  const onLikeClose = () => {
+    setLikeOpen(false);
+  };
+
+  const onViewClose = () => {
+    setViewsOpen(false);
+  };
+
+  const onCommentClose = () => {
+    setCommentsOpen(false);
+  };
+
   const handleDelete = async (articleId) => {
     const response = await axios.put("/api/article", {
       articleId,
@@ -70,6 +94,14 @@ const Articles = ({ articles, data, drArticles }) => {
   if (status === "unauthenticated") {
     router.push("/signin");
   }
+
+  const approveComment = async (id, cid) => {
+    const response = await axios.put(`/api/approvecomment`, {
+      id: id,
+      cid: cid,
+    });
+    console.log(response);
+  };
 
   const onSelectStatusChange = async (e) => {
     if (e.target.value === "published") {
@@ -154,7 +186,7 @@ const Articles = ({ articles, data, drArticles }) => {
                           />
                         )}
 
-                        <VStack align="start" ml={8}>
+                        <VStack align="start" ml={8} spacing={0.5}>
                           <Text fontSize="lg" fontWeight="bold">
                             {article.articleTitle}
                           </Text>
@@ -176,23 +208,44 @@ const Articles = ({ articles, data, drArticles }) => {
                             ))}
                           </HStack>
 
-                          <Box>
-                            <HStack>
-                              <Icon as={HiThumbUp} />
-                              <Text>
-                                {article.likesArray.filter(
-                                  (like) => like.statusId === 1
-                                ).length || 0}
-                              </Text>
+                          <Flex
+                            align="center"
+                            width="100%"
+                            justify="space-between"
+                          >
+                            <HStack spacing={3}>
+                              <HStack spacing={1} cursor="pointer">
+                                <Icon as={HiThumbUp} />
+                                <Text>
+                                  {article.likesArray.filter(
+                                    (like) => like.statusId === 1
+                                  ).length || 0}
+                                </Text>
+                              </HStack>
 
-                              <Icon as={HiEye} />
-                              <Text>
-                                {
-                                  article.viewedArray.filter(
-                                    (view) => view.statusId === 1
-                                  ).length
-                                }
-                              </Text>
+                              <HStack
+                                onClick={() => setViewsOpen(true)}
+                                spacing={1}
+                                cursor="pointer"
+                              >
+                                <Icon as={HiEye} />
+                                <Text>
+                                  {
+                                    article.viewedArray.filter(
+                                      (view) => view.statusId === 1
+                                    ).length
+                                  }
+                                </Text>
+                              </HStack>
+
+                              <HStack
+                                spacing={1}
+                                cursor="pointer"
+                                onClick={() => setCommentsOpen(true)}
+                              >
+                                <ChatIcon fontSize={10} />
+                                <Text>{article.commentsArray.length || 0}</Text>
+                              </HStack>
 
                               <Flex align="center">
                                 <HStack mr={2}>
@@ -210,7 +263,25 @@ const Articles = ({ articles, data, drArticles }) => {
                                 </Box>
                               </Flex>
                             </HStack>
-                          </Box>
+                            <HStack spacing={5}>
+                              <Button
+                                onClick={() => setLikeOpen(true)}
+                                size="sm"
+                                variant="ghost"
+                                colorScheme="blue"
+                              >
+                                View Likes
+                              </Button>
+                              <Button
+                                onClick={() => setCommentsOpen(true)}
+                                size="sm"
+                                variant="ghost"
+                                colorScheme="blue"
+                              >
+                                View Comments
+                              </Button>
+                            </HStack>
+                          </Flex>
                         </VStack>
                       </Flex>
 
@@ -266,6 +337,68 @@ const Articles = ({ articles, data, drArticles }) => {
                       </Flex>
                     </Flex>
                   </CardBody>
+                  <ArticleModal
+                    isOpen={likesOpen}
+                    isClose={onLikeClose}
+                    title="Likes"
+                    data={article.likesArray}
+                  />
+
+                  <ArticleModal
+                    isOpen={viewsOpen}
+                    isClose={onViewClose}
+                    title="Views"
+                    data={article.viewedArray}
+                  />
+
+                  {/* Comments */}
+
+                  <Modal isOpen={commentsOpen} onClose={onCommentClose}>
+                    <ModalOverlay>
+                      <ModalContent>
+                        <ModalHeader>
+                          Comments ({article.commentsArray.length})
+                        </ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                          {article.commentsArray.map((comment) => (
+                            <Flex
+                              key={comment._id}
+                              width="100%"
+                              justify="space-between"
+                              align="center"
+                            >
+                              <VStack align="start" spacing={0} mb={1}>
+                                <Text fontSize="md" fontWeight="semibold">
+                                  {`${comment.firstName} ${comment.lastName}`}
+                                </Text>
+                                <Text>{comment.comment}</Text>
+                              </VStack>
+                              <VStack>
+                                {comment.statusId === 0 && (
+                                  <Button
+                                    onClick={() =>
+                                      approveComment(article._id, comment._id)
+                                    }
+                                    variant="outline"
+                                    colorScheme="green"
+                                    size="sm"
+                                  >
+                                    <CheckIcon />
+                                  </Button>
+                                )}
+
+                                <ReactTimeAgo
+                                  date={comment.createdAt}
+                                  locale="en-US"
+                                />
+                              </VStack>
+                            </Flex>
+                          ))}
+                        </ModalBody>
+                      </ModalContent>
+                    </ModalOverlay>
+                  </Modal>
                 </Card>
               ))}
             </Box>

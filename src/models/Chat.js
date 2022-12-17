@@ -41,6 +41,7 @@ const chatSchema = new mongoose.Schema({
       firstName: { type: String },
       lastName: { type: String },
       msg: { type: String },
+
       statusId: { type: Number },
       createdDate: { type: Date },
       createdBy: { type: String },

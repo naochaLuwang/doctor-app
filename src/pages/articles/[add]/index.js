@@ -31,14 +31,7 @@ import {
 import React, { useEffect, useState } from "react";
 
 import { AddIcon } from "@chakra-ui/icons";
-import Bold from "@tiptap/extension-bold";
-import BulletList from "@tiptap/extension-bullet-list";
-import Document from "@tiptap/extension-document";
 import { Image as Images } from "@tiptap/extension-image";
-import ListItem from "@tiptap/extension-list-item";
-import OrderedList from "@tiptap/extension-ordered-list";
-import Paragraph from "@tiptap/extension-paragraph";
-import Texts from "@tiptap/extension-text";
 import Typography from "@tiptap/extension-typography";
 import Underline from "@tiptap/extension-underline";
 import { BubbleMenu, EditorContent, useEditor } from "@tiptap/react";
@@ -49,10 +42,8 @@ import { useRouter } from "next/router";
 
 import TextAlign from "@tiptap/extension-text-align";
 
-import Blockquote from "@tiptap/extension-blockquote";
-import Dropcursor from "@tiptap/extension-dropcursor";
+import { useToast } from "@chakra-ui/react";
 import Focus from "@tiptap/extension-focus";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Placeholder from "@tiptap/extension-placeholder";
 import Youtube from "@tiptap/extension-youtube";
 import { useS3Upload } from "next-s3-upload";
@@ -98,11 +89,28 @@ const Add = () => {
 
   const fileTypes = ["JPG", "PNG", "GIF"];
 
+  const toast = useToast();
+
+  const handlePreview = () => {
+    onOpen();
+  };
+
+  const onCloses = () => {
+    setIsOpen(false);
+  };
+
+  const router = useRouter();
+
+  const articleId = router.query.add;
+
+  // * function for adding banner images
   let handleFileChanges = async (file) => {
     let { url } = await uploadToS3(file);
     setImageUrl(url);
     setImageFlag("Y");
   };
+
+  // * function for adding editor images
 
   let handleFileChange = async (file) => {
     let { url } = await uploadToS3(file);
@@ -110,22 +118,14 @@ const Add = () => {
     editor.chain().focus().setImage({ src: url }).run();
   };
 
+  // ************************************************************************ tiptap editor setup
+
   const editor = useEditor({
     extensions: [
-      Document,
-      Paragraph.configure({
-        inline: true,
-      }),
-      Texts,
-      BulletList,
-      ListItem,
-      Bold,
       Underline,
-      OrderedList,
+
       Images,
-      HorizontalRule,
-      Dropcursor,
-      Blockquote,
+
       Typography,
       Youtube,
 
@@ -156,21 +156,9 @@ const Add = () => {
     editable: true,
   });
 
-  const handlePreview = () => {
-    onOpen();
-  };
-
   const html = editor?.getHTML();
 
   const json = editor?.getJSON();
-
-  const onCloses = () => {
-    setIsOpen(false);
-  };
-
-  const router = useRouter();
-
-  const articleId = router.query.add;
 
   useEffect(() => {
     setActive("Add a new Article");
@@ -229,6 +217,7 @@ const Add = () => {
     getCategories();
   }, []);
 
+  // !! function for savig articles to draft
   const onHandleSubmit = async (e) => {
     e.preventDefault();
     setIsOpen(true);
@@ -250,7 +239,19 @@ const Add = () => {
         updatedBy: userName,
       });
 
-      console.log(response.data);
+      if (response.error) {
+        toast({
+          title: "Please choose Category and Subcategory",
+          // description: "We've created your account for you.",
+          status: "warning",
+          position: "top",
+          duration: 9000,
+          isClosable: true,
+        });
+
+        setIsOpen(false);
+        return;
+      }
 
       const subCategoryResponse = await axios.post("/api/subcategory", {
         articleCatId: response.data.articleCatId,
@@ -331,6 +332,20 @@ const Add = () => {
         createdBy: userName,
         updatedBy: userName,
       });
+
+      if (!response && !subCategoryResponse) {
+        toast({
+          title: "Please choose Category and Subcategory",
+          // description: "We've created your account for you.",
+          status: "warning",
+          position: "top",
+          duration: 9000,
+          isClosable: true,
+        });
+
+        setIsOpen(false);
+        return;
+      }
 
       if (response && subCategoryResponse) {
         await axios.post("/api/article", {
@@ -848,6 +863,7 @@ const Add = () => {
                   tags={tags}
                   imageUrl={imageUrl}
                   imageFlag={imageFlag}
+                  editor={editor}
                   html={html}
                   json={json}
                   articleSubtitle={articleSubtitle}
