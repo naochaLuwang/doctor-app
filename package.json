@@ -50,6 +50,7 @@
     "next-connect": "^0.13.0",
     "next-s3-upload": "^0.2.8",
     "nprogress": "^0.2.0",
+    "polished": "^4.2.2",
     "react": "^18.2.0",
     "react-dom": "18.2.0",
     "react-drag-drop-files": "^2.3.8",
@@ -61,6 +62,7 @@
     "react-timeago": "^7.1.0",
     "socket.io": "^4.5.4",
     "socket.io-client": "^4.5.4",
+    "styled-components": "^5.3.6",
     "use-file-picker": "^1.5.1",
     "uuidv4": "^6.2.13"
   },

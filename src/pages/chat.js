@@ -38,7 +38,7 @@ const ChatPage = ({ user, users, chatData }) => {
   return (
     <Box
       width="100%"
-      bg="gray.50"
+      bg="gray.200"
       height="92vh"
       overflow="hidden"
       px={6}

@@ -17,6 +17,7 @@ import { TiThMenu } from "react-icons/ti";
 import { IoMdClose } from "react-icons/io";
 import { useGlobalState } from ".";
 import { uuid } from "uuidv4";
+import { HiBell } from "react-icons/hi";
 
 const Navbar = ({ title }) => {
   const [open, setOpen] = useGlobalState("open");
@@ -42,7 +43,7 @@ const Navbar = ({ title }) => {
   };
 
   return (
-    <Box display="flex" bg={"gray.50"} px={4} py={2} h={12}>
+    <Box display="flex" bg={"white"} shadow="sm" px={4} py={2} h={12}>
       <Flex
         align="center"
         flex={1}
@@ -58,12 +59,13 @@ const Navbar = ({ title }) => {
           onClick={handleSidebar}
         />
 
-        <Text ml={2} fontSize="12pt" fontWeight="bold" color="gray.600">
+        <Text ml={2} fontSize="12pt" fontWeight="bold" color="purple.600">
           {title}
         </Text>
       </Flex>
 
-      <Flex mr={5}>
+      <Flex mr={5} align="center">
+        <Icon as={HiBell} w={7} h={7} mr={5} color="gray.600" />
         <Menu>
           <MenuButton>
             <Avatar size="sm" name={`${firstName} ${lastName}`} />

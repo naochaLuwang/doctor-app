@@ -150,7 +150,13 @@ const Home = ({ session, articles, users }) => {
           <Card width="100%" height="65vh" bg="white" mt={5}>
             <CardBody>
               <>
-                <Text fontSize="lg" fontWeight="medium" ml="3" mb={2}>
+                <Text
+                  fontSize="lg"
+                  fontWeight="semibold"
+                  letterSpacing={"wide"}
+                  ml="3"
+                  mb={2}
+                >
                   Recent Article
                 </Text>
 
@@ -199,7 +205,18 @@ const Home = ({ session, articles, users }) => {
                             </HStack>
                           </Td>
                           <Td>{publishedDate(article.publishedDate)}</Td>
-                          <Td>{article.articleCatName}</Td>
+                          <Td>
+                            <Text
+                              bg="pink.400"
+                              width="fit-content"
+                              px={2}
+                              py={1}
+                              rounded="md"
+                              color="white"
+                            >
+                              {article.articleCatName}
+                            </Text>
+                          </Td>
                           <Td>{`${article.commentsArray.length} comments`}</Td>
                           <Td>{`${article.likesArray.length} likes`}</Td>
                           <Td>{`${article.viewedArray.length} views`}</Td>
