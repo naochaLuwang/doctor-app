@@ -24,6 +24,7 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
+  Input,
 } from "@chakra-ui/react";
 import { getSession, useSession } from "next-auth/react";
 
@@ -45,8 +46,9 @@ import axios from "axios";
 import ArticleModal from "../../components/Modal";
 import { ChatIcon, CheckIcon } from "@chakra-ui/icons";
 import ReactTimeAgo from "react-time-ago";
+import ArticleCategory from "../../models/ArticleCategory";
 
-const Articles = ({ articles, data, drArticles }) => {
+const Articles = ({ articles, data, drArticles, categories }) => {
   const [active, setActive] = useGlobalState("active");
   const [user, setUser] = useState(data);
   const [articlesList, setArticlesList] = useState(articles);
@@ -64,7 +66,7 @@ const Articles = ({ articles, data, drArticles }) => {
     setActive("Article");
   }, [setActive]);
 
-  console.log(user);
+  console.log(categories);
 
   const addNewArticle = () => {
     const id = uuid();
@@ -121,12 +123,49 @@ const Articles = ({ articles, data, drArticles }) => {
     return (
       <>
         <Box width="100%" height="90vh" px={8} py={6} overflow="hidden">
-          <Flex flex="1" align="center" justify="end" px={4}>
+          <Flex flex="1" align="center" justify="end" px={2}>
             {/* <Text fontSize="2xl" fontWeight={500} color="gray.600">
               Articles
             </Text> */}
 
+            <Input
+              mr={5}
+              type="serach"
+              placeholder="Search Articles"
+              fontSize="12pt"
+              fontWeight="medium"
+              _placeholder={{ color: "gray.500" }}
+              _hover={{
+                bg: "white",
+                border: "1px solid",
+                borderColor: "blue.500",
+              }}
+              _focus={{
+                outline: "none",
+                bg: "white",
+                border: "1px solid",
+                borderColor: "blue.500",
+              }}
+              bg="gray.200"
+            />
+
             <HStack spacing={5} w="400px" align="center" justify="end">
+              {/* <Select
+                size="sm"
+                w="150px"
+                variant="outline"
+                bg="purple.50"
+                rounded="md"
+              >
+                {categories?.map((category) => (
+                  <option
+                    key={category.articleCatId}
+                    value={category.categoryName}
+                  >
+                    {category.categoryName}
+                  </option>
+                ))}
+              </Select> */}
               <Select
                 size="sm"
                 w="200px"
@@ -140,7 +179,8 @@ const Articles = ({ articles, data, drArticles }) => {
               </Select>
               <Button
                 size="sm"
-                variant="outline"
+                px={5}
+                variant="solid"
                 colorScheme="purple"
                 onClick={addNewArticle}
               >
@@ -360,20 +400,37 @@ const Articles = ({ articles, data, drArticles }) => {
                           Comments ({article.commentsArray.length})
                         </ModalHeader>
                         <ModalCloseButton />
-                        <ModalBody>
+                        <ModalBody bg="gray.50" px={2}>
                           {article.commentsArray.map((comment) => (
                             <Flex
                               key={comment._id}
                               width="100%"
                               justify="space-between"
                               align="center"
+                              px={3}
+                              py={2}
+                              rounded="xl"
+                              _hover={{ bg: "gray.100" }}
                             >
-                              <VStack align="start" spacing={0} mb={1}>
-                                <Text fontSize="md" fontWeight="semibold">
-                                  {`${comment.firstName} ${comment.lastName}`}
-                                </Text>
-                                <Text>{comment.comment}</Text>
-                              </VStack>
+                              <HStack spacing={2}>
+                                <Box
+                                  width="5px"
+                                  height="35px"
+                                  rounded="full"
+                                  bg={
+                                    comment.statusId === 0
+                                      ? "red.300"
+                                      : "green.200"
+                                  }
+                                ></Box>
+                                <VStack align="start" spacing={0} mb={1}>
+                                  <Text fontSize="md" fontWeight="semibold">
+                                    {`${comment.firstName} ${comment.lastName}`}
+                                  </Text>
+                                  <Text>{comment.comment}</Text>
+                                </VStack>
+                              </HStack>
+
                               <VStack>
                                 {comment.statusId === 0 && (
                                   <Button
@@ -602,11 +659,16 @@ export async function getServerSideProps(context) {
     isActive: "Y",
   });
 
+  const categories = await ArticleCategory.find({
+    tenantId: user?.tenantId,
+  });
+
   return {
     props: {
       articles: JSON.parse(JSON.stringify(publishedArticles)),
       drArticles: JSON.parse(JSON.stringify(draftArticles)),
       data: JSON.parse(JSON.stringify(user)),
+      categories: JSON.parse(JSON.stringify(categories)),
       session,
     },
   };

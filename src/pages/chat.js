@@ -53,6 +53,7 @@ const ChatPage = ({ user, users, chatData }) => {
           setFirstName={setFirstName}
           setLastName={setLastName}
           chats={chats}
+          // chat={chat}
           setChat={setChat}
           newChat={newChat}
           setNewChat={setNewChat}

@@ -42,6 +42,14 @@ const ChatRight = ({
   useEffect(() => {
     socket.on("receive_message", (data) => {
       if (data.fromId === regId) {
+        getChat();
+
+        // for (let i = 0; i < chat.length; i++) {
+        //   if (chat[i].typeId == 1 && chat[i].isRead === "N") {
+        //     updateReadChat(regId, chat[i]._id);
+        //   }
+        // }
+
         setIsChatOpen(true);
       } else {
         setIsChatOpen(false);
@@ -55,6 +63,14 @@ const ChatRight = ({
       }
     });
   }, [socket]);
+
+  const updateReadChat = async (chatId, mId) => {
+    const response = await axios.put("/api/updatechat", {
+      chatId: chatId,
+      messageId: mId,
+      readDate: new Date(),
+    });
+  };
 
   const handleProfile = async () => {
     const response = await axios.get(`/api/getuserprofile/${regId}`);
@@ -98,6 +114,10 @@ const ChatRight = ({
             statusId: 1,
             createdDate: new Date(),
             createdBy: "admin",
+            isRead: "N",
+            readDate: new Date(),
+            attachFileFlag: "N",
+            attachFile: "",
           },
         ],
         createdDate: new Date(),
@@ -124,6 +144,10 @@ const ChatRight = ({
               statusId: 1,
               createdDate: new Date(),
               createdBy: "admin",
+              isRead: "N",
+              readDate: new Date(),
+              attachFileFlag: "N",
+              attachFile: "",
             },
           ],
 
@@ -152,6 +176,10 @@ const ChatRight = ({
           statusId: 1,
           createdDate: new Date(),
           createdBy: "admin",
+          isRead: "N",
+          readDate: new Date(),
+          attachFileFlag: "N",
+          attachFile: "",
         },
 
         lastChatDate: new Date(),
@@ -182,6 +210,10 @@ const ChatRight = ({
               statusId: 1,
               createdDate: new Date(),
               createdBy: "admin",
+              isRead: "N",
+              readDate: new Date(),
+              attachFileFlag: "N",
+              attachFile: "",
             },
           ],
 

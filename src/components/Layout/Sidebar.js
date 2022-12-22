@@ -1,6 +1,4 @@
-import { Box, Flex, Icon, Stack, Text } from "@chakra-ui/react";
-
-import Image from "next/legacy/image";
+import { Box, Flex, Icon, Image, Stack, Text } from "@chakra-ui/react";
 
 import React, { useState } from "react";
 import { AiFillHome } from "react-icons/ai";
@@ -26,27 +24,32 @@ const Sidebar = ({ open }) => {
     >
       <Box
         display="flex"
-        align={open ? "start" : "center"}
-        px={open && 2}
+        alignItems="center"
         justifyContent={!open && "center"}
-        mb={2}
+        width={open ? "220px" : "64px"}
+        mb={1}
+        px={2}
+        cursor="pointer"
+        onClick={() => {
+          router.push("/");
+          setActive("Home");
+        }}
       >
-        <Box position="relative" h={6} w={6}>
-          <Image
-            src="/logo.jpeg"
-            alt="logo"
-            layout="fill"
-            objectFit="contain"
-          />
-        </Box>
+        <Image
+          src={"/logojnb.png"}
+          alt="logo"
+          h="12"
+          w="12"
+          mr={!open ? 7 : 0}
+        />
 
         <Text
           display={open ? "inline-flex" : "none"}
-          color="blue.800"
-          fontWeight={700}
+          fontSize="11pt"
+          fontWeight="semibold"
           ml={2}
         >
-          Doctor App
+          Dr. JNB App
         </Text>
       </Box>
 

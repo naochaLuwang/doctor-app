@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import Registration from "../models/Regsitration";
 
 import {
+  Avatar,
   Box,
+  Button,
   Card,
   CardBody,
   Flex,
@@ -14,6 +16,12 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Table,
   TableContainer,
   Tbody,
@@ -22,6 +30,7 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -35,6 +44,7 @@ import DoctorMaster from "../models/DoctorMaster";
 import dbConnect from "../utils/db";
 import moment from "moment";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import UserModal from "../components/UserModal";
 const Home = ({ session, articles, users }) => {
   const { status } = useSession();
   const [active, setActive] = useGlobalState("active");
@@ -45,6 +55,7 @@ const Home = ({ session, articles, users }) => {
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [articlesList, setArticlesList] = useState(articles);
   const router = useRouter();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     setActive("Home");
@@ -110,7 +121,7 @@ const Home = ({ session, articles, users }) => {
           </HStack>
 
           <HStack mt={5} spacing={5}>
-            <Card bg="white" width="15%">
+            <Card bg="white" width="15%" cursor="pointer" onClick={onOpen}>
               <CardBody>
                 <Flex align="center">
                   <Box bg="teal.50" p={2} rounded="2xl">
@@ -125,7 +136,12 @@ const Home = ({ session, articles, users }) => {
                 </Flex>
               </CardBody>
             </Card>
-            <Card bg="white" width="15%">
+            <Card
+              bg="white"
+              width="15%"
+              cursor="pointer"
+              onClick={() => router.push("/articles")}
+            >
               <CardBody>
                 <Flex align="center">
                   <Box bg="orange.50" p={2} rounded="2xl">
@@ -145,6 +161,35 @@ const Home = ({ session, articles, users }) => {
                 </Flex>
               </CardBody>
             </Card>
+            <Modal isOpen={isOpen} onClose={onClose}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>
+                  <Flex align="center" justify="space-between">
+                    <Text>Users</Text>{" "}
+                    <Button size="sm" onClick={() => router.push("/users")}>
+                      View all
+                    </Button>
+                  </Flex>
+                </ModalHeader>
+
+                <ModalBody bg="gray.50">
+                  {users.map((user) => (
+                    <Flex key={user._id} mb={1} py={2}>
+                      <HStack>
+                        <Avatar
+                          size="sm"
+                          name={`${user.FirstName} ${user.LastName}`}
+                        ></Avatar>
+                        <Text>
+                          {user.FirstName} {user.LastName}
+                        </Text>
+                      </HStack>
+                    </Flex>
+                  ))}
+                </ModalBody>
+              </ModalContent>
+            </Modal>
           </HStack>
 
           <Card width="100%" height="65vh" bg="white" mt={5}>
@@ -282,8 +327,8 @@ export async function getServerSideProps(context) {
   if (!session) {
     return {
       redirect: {
-        permanent: false,
         destination: "/signin",
+        permanent: false,
       },
     };
   }

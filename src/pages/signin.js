@@ -16,7 +16,7 @@ const SignIn = () => {
   return (
     <>
       {status === "unauthenticated" && (
-        <Flex width="100%" height="100vh" bg="gray.100">
+        <Flex width="100%" height="100vh" bg="red">
           {/* left */}
           {/* <Box
             flex="1"
@@ -24,9 +24,9 @@ const SignIn = () => {
             display={{ base: "none", md: "inline-flex" }}
           ></Box> */}
           {/* right */}
-          <Flex flex="1" align="center" justify="center" bg="white">
+          <Flex flex="1" align="center" justify="center" bg="gray.100">
             <Card>
-              <CardBody>
+              <CardBody bg="white" rounded="lg" shadow="md">
                 <Flex
                   width="400px"
                   align="start"
@@ -34,9 +34,26 @@ const SignIn = () => {
                   direction="column"
                   p={{ base: "5", md: "none" }}
                 >
-                  {/* <Box>
-            <Image 
-          </Box> */}
+                  <Flex
+                    width="100%"
+                    align="center"
+                    direction="column"
+                    justify="center"
+                    mt={-5}
+                  >
+                    <Box width="200px" height="200px" position="relative">
+                      <Image
+                        src={"/logojnb.png"}
+                        layout="fill"
+                        alt="logo"
+                        objectFit="cover"
+                      />
+                    </Box>
+                    <Text fontSize="lg" fontWeight="medium" mt={-10}>
+                      Dr. JNB App
+                    </Text>
+                  </Flex>
+
                   <Flex
                     mb={4}
                     direction="column"

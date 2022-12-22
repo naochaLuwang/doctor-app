@@ -45,6 +45,10 @@ const chatSchema = new mongoose.Schema({
       statusId: { type: Number },
       createdDate: { type: Date },
       createdBy: { type: String },
+      isRead: { type: String },
+      readDate: { type: Date },
+      attachFileFlag: { type: String },
+      attachFileFlag: { type: String },
     },
   ],
 

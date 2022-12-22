@@ -45,6 +45,7 @@ const ChatLeft = ({
   const socket = io.connect("http://localhost:4000");
 
   const [searchField, setSearchField] = useState("");
+  const [unread, setUnread] = useState("");
 
   const handleChange = (e) => {
     setSearchField(e.target.value);
@@ -68,6 +69,7 @@ const ChatLeft = ({
   const getChats = async (req, res) => {
     const chatResponse = await axios.get("/api/getchat");
     setChats(chatResponse.data);
+    console.log("Chats", chats);
   };
 
   const handleChat = (id, fname, lname, uid) => {
@@ -263,6 +265,7 @@ const ChatLeft = ({
                               locale="en-US"
                               timeStyle="twitter-now"
                             />
+                            <Text>{unread}</Text>
                           </Flex>
                         </Box>
                       ))}
