@@ -3,56 +3,56 @@ import {
   Button,
   Card,
   CardBody,
+  Center,
   Flex,
   HStack,
   Icon,
+  Image,
+  Input,
   Link,
   Menu,
-  Image,
   MenuButton,
   MenuItem,
   MenuList,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Select,
   Tag,
   TagLabel,
   Text,
   VStack,
-  Center,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  Input,
 } from "@chakra-ui/react";
 import { getSession, useSession } from "next-auth/react";
 
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import TimeAgo from "react-timeago";
+import { v4 as uuidv4 } from "uuid";
+import { useGlobalState } from "../../components/Layout";
 import Article from "../../models/Article";
 import DoctorMaster from "../../models/DoctorMaster";
 import dbConnect from "../../utils/db";
-import { useGlobalState } from "../../components/Layout";
-import { RiArticleFill } from "react-icons/ri";
-import { uuid } from "uuidv4";
-import TimeAgo from "react-timeago";
 
 import EmptyArticle from "../../components/EmptyArticle";
 // import Image from "next/image";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { HiThumbUp, HiEye } from "react-icons/hi";
-import axios from "axios";
-import ArticleModal from "../../components/Modal";
 import { ChatIcon, CheckIcon } from "@chakra-ui/icons";
+import axios from "axios";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { HiEye, HiThumbUp } from "react-icons/hi";
 import ReactTimeAgo from "react-time-ago";
+import ArticleModal from "../../components/Modal";
 import ArticleCategory from "../../models/ArticleCategory";
+import EmptyDraft from "../../components/EmptyDraft";
 
 const Articles = ({ articles, data, drArticles, categories }) => {
-  const [active, setActive] = useGlobalState("active");
-  const [user, setUser] = useState(data);
-  const [articlesList, setArticlesList] = useState(articles);
-  const [draftArticles, setDraftArticles] = useState(drArticles);
+  const [active, setActive] = useGlobalState("active"); // ?? Global state variable to set the header
+  const [user, setUser] = useState(data); // ?? state variable for storing all users
+  const [articlesList, setArticlesList] = useState(articles); // ?? state variable for storing all articles
+  const [draftArticles, setDraftArticles] = useState(drArticles); // ?? state variable for storing all drfat articles if present
   const [articleStatus, setArticleStatus] = useState(true);
   const [likesOpen, setLikeOpen] = useState(false);
   const [viewsOpen, setViewsOpen] = useState(false);
@@ -60,16 +60,16 @@ const Articles = ({ articles, data, drArticles, categories }) => {
 
   const router = useRouter();
 
-  const { status, data: session } = useSession();
+  const { status, data: session } = useSession(); //!! next auth session
 
+  // * setting the Header
   useEffect(() => {
     setActive("Article");
   }, [setActive]);
 
-  console.log(categories);
-
+  // * callback function for adding a new article
   const addNewArticle = () => {
-    const id = uuid();
+    const id = uuidv4();
     router.push(`/articles/${id}`);
   };
 
@@ -93,10 +93,6 @@ const Articles = ({ articles, data, drArticles, categories }) => {
     setArticlesList(response.data);
   };
 
-  if (status === "unauthenticated") {
-    router.push("/signin");
-  }
-
   const approveComment = async (id, cid) => {
     const response = await axios.put(`/api/approvecomment`, {
       id: id,
@@ -115,8 +111,14 @@ const Articles = ({ articles, data, drArticles, categories }) => {
     }
   };
 
+  // !! page to be displayed if both articles and draft articles are empty
+
   if (articlesList.length <= 0 && draftArticles.length <= 0) {
     return <EmptyArticle />;
+  }
+
+  if (status === "unauthenticated") {
+    router.push("/signin");
   }
 
   if (status === "authenticated") {
@@ -124,10 +126,6 @@ const Articles = ({ articles, data, drArticles, categories }) => {
       <>
         <Box width="100%" height="90vh" px={8} py={6} overflow="hidden">
           <Flex flex="1" align="center" justify="end" px={2}>
-            {/* <Text fontSize="2xl" fontWeight={500} color="gray.600">
-              Articles
-            </Text> */}
-
             <Input
               mr={5}
               type="serach"
@@ -150,7 +148,7 @@ const Articles = ({ articles, data, drArticles, categories }) => {
             />
 
             <HStack spacing={5} w="400px" align="center" justify="end">
-              {/* <Select
+              <Select
                 size="sm"
                 w="150px"
                 variant="outline"
@@ -165,7 +163,7 @@ const Articles = ({ articles, data, drArticles, categories }) => {
                     {category.categoryName}
                   </option>
                 ))}
-              </Select> */}
+              </Select>
               <Select
                 size="sm"
                 w="200px"
@@ -177,6 +175,7 @@ const Articles = ({ articles, data, drArticles, categories }) => {
                 <option value="published">Published</option>
                 <option value="draft">Draft</option>
               </Select>
+              {/* <Link href={`/articles/${id}`}> */}
               <Button
                 size="sm"
                 px={5}
@@ -186,9 +185,11 @@ const Articles = ({ articles, data, drArticles, categories }) => {
               >
                 New Article
               </Button>
+              {/* </Link> */}
             </HStack>
           </Flex>
 
+          {/* published articles */}
           {articleStatus && articlesList.length > 0 && (
             <Box
               mt={5}
@@ -221,6 +222,7 @@ const Articles = ({ articles, data, drArticles, categories }) => {
                             htmlHeight="20px"
                             htmlWidth="150px"
                             rounded="md"
+                            border="1px solid black"
                             // boxSize={{ width: "50px", height: "20px" }}
                             objectFit="fill"
                           />
@@ -393,15 +395,20 @@ const Articles = ({ articles, data, drArticles, categories }) => {
 
                   {/* Comments */}
 
-                  <Modal isOpen={commentsOpen} onClose={onCommentClose}>
+                  <Modal
+                    isOpen={commentsOpen}
+                    onClose={onCommentClose}
+                    size={"3xl"}
+                    rounded="xl"
+                  >
                     <ModalOverlay>
                       <ModalContent>
                         <ModalHeader>
                           Comments ({article.commentsArray.length})
                         </ModalHeader>
                         <ModalCloseButton />
-                        <ModalBody bg="gray.50" px={2}>
-                          {article.commentsArray.map((comment) => (
+                        <ModalBody bg="gray.50" px={2} roundedBottom="xl">
+                          {article.commentsArray.reverse().map((comment) => (
                             <Flex
                               key={comment._id}
                               width="100%"
@@ -410,7 +417,7 @@ const Articles = ({ articles, data, drArticles, categories }) => {
                               px={3}
                               py={2}
                               rounded="xl"
-                              _hover={{ bg: "gray.100" }}
+                              _hover={{ bg: "gray.100", cursor: "pointer" }}
                             >
                               <HStack spacing={2}>
                                 <Box
@@ -618,9 +625,12 @@ const Articles = ({ articles, data, drArticles, categories }) => {
               ))}
             </Box>
           ) : (
-            <Center>
-              <Text>No draft</Text>
-            </Center>
+            <>
+              <EmptyDraft
+                addNewArticle={addNewArticle}
+                setArticleStatus={setArticleStatus}
+              />
+            </>
           )}
         </Box>
       </>

@@ -1,4 +1,6 @@
 import {
+  Avatar,
+  Flex,
   HStack,
   Modal,
   ModalBody,
@@ -7,8 +9,10 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import React from "react";
+import ReactTimeAgo from "react-time-ago";
 
 const ArticleModal = ({ isOpen, isClose, title, data }) => {
   console.log("Data is", data);
@@ -19,11 +23,30 @@ const ArticleModal = ({ isOpen, isClose, title, data }) => {
           <ModalContent>
             <ModalHeader>{title}</ModalHeader>
             <ModalCloseButton />
-            <ModalBody>
-              {data.map((user) => (
-                <Text key={user._id}>
-                  {user.firstName} {user.lastName}
-                </Text>
+            <ModalBody bg="gray.50">
+              {data.reverse().map((user) => (
+                <Flex
+                  width="100%"
+                  alignItems={"center"}
+                  py={2}
+                  justifyContent="space-between"
+                  key={user._id}
+                  _hover={{ bg: "gray.100", cursor: "pointer", rounded: "md" }}
+                >
+                  <HStack>
+                    <Avatar
+                      name={`${user.firstName} ${user.lastName}`}
+                      size="sm"
+                    />
+                    <Text fontWeight={"semibold"}>
+                      {user.firstName} {user.lastName}
+                    </Text>
+                  </HStack>
+
+                  <Text fontSize="xs">
+                    <ReactTimeAgo date={user.createdAt} />
+                  </Text>
+                </Flex>
               ))}
             </ModalBody>
           </ModalContent>

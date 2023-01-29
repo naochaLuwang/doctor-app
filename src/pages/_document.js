@@ -1,5 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
-import Script from "next/script";
+
 import { ColorModeScript } from "@chakra-ui/react";
 import theme from "../chakra/theme";
 
@@ -25,12 +25,7 @@ class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head>
-          <Script
-            src="/node_modules/quill-image-resize-module/image-resize.min.js"
-            strategy="beforInteractive"
-          />
-        </Head>
+        <Head></Head>
         <body>
           <ColorModeScript initialColorMode={theme.config.initialColorMode} />
           <Main />

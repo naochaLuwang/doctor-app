@@ -100,7 +100,7 @@ const Navbar = ({ title }) => {
             >
               Dashboard
             </MenuItem>
-            <MenuItem
+            {/* <MenuItem
               _hover={{
                 bg: "purple.50",
                 rounded: "lg",
@@ -109,7 +109,7 @@ const Navbar = ({ title }) => {
               onClick={addNewArticle}
             >
               Create Article
-            </MenuItem>
+            </MenuItem> */}
             <MenuItem
               mb={1}
               _hover={{

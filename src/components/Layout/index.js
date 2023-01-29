@@ -1,12 +1,14 @@
-import { Box, Flex, Stack, Text } from "@chakra-ui/react";
-import React, { useState, useEffect } from "react";
+import { Box, Flex } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import { createGlobalState } from "react-hooks-global-state";
+
 import axios from "axios";
 import Router from "next/router";
+import { createGlobalState } from "react-hooks-global-state";
+
+import SunspotLoader from "../Loaders/SunspotLoader";
 
 const initialState = {
   open: false,
@@ -62,7 +64,18 @@ const Layout = ({ children }) => {
             <Sidebar open={open} />
             <Flex flex={1} bg="WhiteAlpha.200" direction="column">
               <Navbar title={active} />
-              {loading ? <Text>Loading</Text> : <div>{children}</div>}
+              {loading ? (
+                <Flex
+                  w="full"
+                  h="full"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <SunspotLoader />
+                </Flex>
+              ) : (
+                <div>{children}</div>
+              )}
             </Flex>
           </Flex>
         </Box>

@@ -5,10 +5,10 @@ import bcrypt from "bcrypt";
 import AdminLogin from "../../../models/AdminLogin";
 
 export default NextAuth({
-  // session: {
-  //   strategy: "jwt",
-  //   maxAge: 24 * 60 * 60,
-  // },
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60,
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -50,14 +50,20 @@ export default NextAuth({
   pages: {
     signIn: "/signin",
   },
-  secret: "secret",
+  secret: process.env.NEXTAUTH_SECRET,
   database: process.env.MONGODB_URI,
-  // callbacks: {
-  //   session: async (session, user, sessionToken) => {
-  //     session.user.name = user.userName;
-  //     return Promise.resolve(session);
-  //   },
-  // },
+  callbacks: {
+    async jwt({ token, account }) {
+      if (account) {
+        token.accessToken = account.access_token;
+      }
+      return token;
+    },
+    async session({ session, token, user }) {
+      session.accessToken = token.accessToken;
+      return session;
+    },
+  },
 });
 
 // const signInUser = async ({ password, user }) => {};

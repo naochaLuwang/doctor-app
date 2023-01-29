@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   CardBody,
-  Center,
   Flex,
   HStack,
   Icon,
@@ -15,19 +14,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { BsFillChatLeftDotsFill, BsThreeDotsVertical } from "react-icons/bs";
-import { MdKeyboardBackspace } from "react-icons/md";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import ReactTimeAgo from "react-time-ago";
-import TimeAgo from "javascript-time-ago";
 
-import en from "javascript-time-ago/locale/en.json";
-import io from "socket.io-client";
 import { Search2Icon } from "@chakra-ui/icons";
 import SearchList from "./SearchList";
-
-TimeAgo.addDefaultLocale(en);
 
 const ChatLeft = ({
   user,
@@ -42,7 +35,7 @@ const ChatLeft = ({
   setChats,
   setIsChatOpen,
 }) => {
-  const socket = io.connect("http://localhost:4000");
+  // const socket = io.connect("http://socketapi.jnburagohain.com");
 
   const [searchField, setSearchField] = useState("");
   const [unread, setUnread] = useState("");
@@ -60,11 +53,10 @@ const ChatLeft = ({
   };
 
   useEffect(() => {
-    socket.on("receive_message", (data) => {
-      getChats();
-    });
+    getChats();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket]);
+  }, []);
 
   const getChats = async (req, res) => {
     const chatResponse = await axios.get("/api/getchat");
@@ -72,15 +64,15 @@ const ChatLeft = ({
     console.log("Chats", chats);
   };
 
-  const handleChat = (id, fname, lname, uid) => {
-    setRegId(id);
-    setFirstName(fname);
-    setLastName(lname);
-    setIsChatOpen(true);
-    setChat([]);
+  // const handleChat = (id, fname, lname, uid) => {
+  //   setRegId(id);
+  //   setFirstName(fname);
+  //   setLastName(lname);
+  //   setIsChatOpen(true);
+  //   setChat([]);
 
-    // setUserId(uid);
-  };
+  //   // setUserId(uid);
+  // };
 
   const handleChats = async (id) => {
     setIsChatOpen(true);
@@ -90,6 +82,22 @@ const ChatLeft = ({
     setLastName(response.data.lastName);
     setChat(response.data.messages);
     console.log(response.data);
+
+    if (response.data.messages.length > 0) {
+      for (let i = 0; i < response.data.messages.length; i++) {
+        if (
+          response.data.messages[i].typeId === 1 &&
+          response.data.messages[i].isRead === "N"
+        ) {
+          const updateChat = await axios.put("/api/updatechat", {
+            chatId: response.data.fromId,
+            messageId: response.data.messages[i]._id,
+            readDate: new Date(),
+          });
+          console.log(response.data.messages[i]._id);
+        }
+      }
+    }
   };
 
   return (
@@ -256,7 +264,9 @@ const ChatLeft = ({
                                   {chat.firstName} {chat.lastName}
                                 </Text>
                                 <Text noOfLines={1} fontSize="xs">
-                                  {chat.lastChatMessage}
+                                  {chat.lastChatMessage === "doc!@"
+                                    ? "Attachment"
+                                    : chat.lastChatMessage}
                                 </Text>
                               </VStack>
                             </HStack>

@@ -25,15 +25,9 @@ const ChatPage = ({ user, users, chatData }) => {
   const [userId, setUserId] = useState("");
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  let socket;
-
   useEffect(() => {
     setActive("Chat");
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setActive]);
-
-  console.log("ChatId", chatId);
 
   return (
     <Box
@@ -73,7 +67,7 @@ const ChatPage = ({ user, users, chatData }) => {
           setChat={setChat}
           setNewChat={setNewChat}
           setChats={setChats}
-          socket={socket}
+          // socket={socket}
           profileOpen={profileOpen}
           setprofileOpen={setprofileOpen}
           setProfile={setProfile}

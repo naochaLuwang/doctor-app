@@ -48,7 +48,7 @@ const chatSchema = new mongoose.Schema({
       isRead: { type: String },
       readDate: { type: Date },
       attachFileFlag: { type: String },
-      attachFileFlag: { type: String },
+      attachFile: { type: String },
     },
   ],
 
@@ -59,6 +59,10 @@ const chatSchema = new mongoose.Schema({
     type: String,
   },
   createdDate: { type: Date },
+  lastChatDateTxt: {
+    type: String,
+  },
+  lastChatTimeTxt: { type: String },
 });
 
 const Chat = mongoose.models.Chat || mongoose.model("Chat", chatSchema);

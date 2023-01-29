@@ -9,6 +9,8 @@ handler.get(async (req, res) => {
   try {
     await dbConnect();
     const response = await Chat.findOne({ fromId: req.query.fromId });
+    console.log(response.messages.length);
+
     res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -29,6 +31,8 @@ handler.post(async (req, res) => {
       lastChatBy,
       messages,
       createdDate,
+      lastChatDateTxt,
+      lastChatTimeTxt,
     } = req.body;
 
     const newChat = new Chat({
@@ -44,6 +48,8 @@ handler.post(async (req, res) => {
       tenantId: 1,
       isActive: "Y",
       createdDate,
+      lastChatDateTxt,
+      lastChatTimeTxt,
     });
 
     await newChat.save();
@@ -57,8 +63,15 @@ handler.put(async (req, res) => {
   try {
     await dbConnect();
 
-    const { fromId, chats, lastChatDate, lastChatMessage, lastChatBy } =
-      req.body;
+    const {
+      fromId,
+      chats,
+      lastChatDate,
+      lastChatMessage,
+      lastChatBy,
+      lastChatDateTxt,
+      lastChatTimeTxt,
+    } = req.body;
 
     const response = await Chat.findOneAndUpdate(
       { fromId: fromId },
@@ -67,6 +80,8 @@ handler.put(async (req, res) => {
         lastChatDate: lastChatDate,
         lastChatMessage: lastChatMessage,
         lastChatBy: lastChatBy,
+        lastChatDateTxt: lastChatDateTxt,
+        lastChatTimeTxt: lastChatTimeTxt,
       },
 
       {

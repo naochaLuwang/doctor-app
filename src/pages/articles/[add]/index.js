@@ -397,6 +397,14 @@ const Add = () => {
     return null;
   }
 
+  if (status === "loading") {
+    return <Text>Loading ...</Text>;
+  }
+
+  if (status === "unauthenticated") {
+    router.push("/signin");
+  }
+
   return (
     <>
       {status === "authenticated" && (

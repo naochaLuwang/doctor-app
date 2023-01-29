@@ -5,10 +5,10 @@ const handler = nc();
 
 handler.put(async (req, res) => {
   const { chatId, readDate, messageId } = req.body;
-  const response = await Chat.update(
+  const response = await Chat.findOneAndUpdate(
     {
       fromId: chatId,
-      "messages.typeId": 1,
+
       "messages._id": messageId,
     },
     {

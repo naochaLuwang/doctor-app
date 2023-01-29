@@ -44,45 +44,24 @@ import DoctorMaster from "../models/DoctorMaster";
 import dbConnect from "../utils/db";
 import moment from "moment";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import UserModal from "../components/UserModal";
+import CardTemplate from "../components/Dashboard/CardTemplate";
+
 const Home = ({ session, articles, users }) => {
   const { status } = useSession();
   const [active, setActive] = useGlobalState("active");
   const [firstName, setFirstName] = useGlobalState("firstName");
   const [lastName, setLastName] = useGlobalState("lastName");
-  const [likesOpen, setLikeOpen] = useState(false);
-  const [viewsOpen, setViewsOpen] = useState(false);
-  const [commentsOpen, setCommentsOpen] = useState(false);
+
   const [articlesList, setArticlesList] = useState(articles);
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  // setting page title
   useEffect(() => {
     setActive("Home");
+  }, [setActive]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onLikeClose = () => {
-    setLikeOpen(false);
-  };
-
-  const onViewClose = () => {
-    setViewsOpen(false);
-  };
-
-  const onCommentClose = () => {
-    setCommentsOpen(false);
-  };
-
-  const approveComment = async (id, cid) => {
-    const response = await axios.put(`/api/approvecomment`, {
-      id: id,
-      cid: cid,
-    });
-    console.log(response);
-  };
-
+  // function for handling article delete
   const handleDelete = async (articleId) => {
     const response = await axios.put("/api/article", {
       articleId,
@@ -120,22 +99,16 @@ const Home = ({ session, articles, users }) => {
             />
           </HStack>
 
+          {/* user and article card */}
           <HStack mt={5} spacing={5}>
-            <Card bg="white" width="15%" cursor="pointer" onClick={onOpen}>
-              <CardBody>
-                <Flex align="center">
-                  <Box bg="teal.50" p={2} rounded="2xl">
-                    <Icon as={TiGroup} h={10} w={10} color="teal.400" />
-                  </Box>
-                  <VStack spacing={1} align="start" ml={5}>
-                    <Text fontSize="xl" fontWeight="semibold">
-                      {users.length}
-                    </Text>
-                    <Text>Users</Text>
-                  </VStack>
-                </Flex>
-              </CardBody>
-            </Card>
+            <CardTemplate
+              onOpen={onOpen}
+              title={"Users"}
+              count={users.length}
+              iconName={TiGroup}
+              iconColor={"teal.500"}
+              iconBackground={"teal.50"}
+            />
             <Card
               bg="white"
               width="15%"
@@ -161,13 +134,17 @@ const Home = ({ session, articles, users }) => {
                 </Flex>
               </CardBody>
             </Card>
-            <Modal isOpen={isOpen} onClose={onClose}>
+            <Modal isOpen={isOpen} onClose={onClose} scrollBehavior={"inside"}>
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>
                   <Flex align="center" justify="space-between">
                     <Text>Users</Text>{" "}
-                    <Button size="sm" onClick={() => router.push("/users")}>
+                    <Button
+                      size="sm"
+                      colorScheme="twitter"
+                      onClick={() => router.push("/users")}
+                    >
                       View all
                     </Button>
                   </Flex>
@@ -175,7 +152,13 @@ const Home = ({ session, articles, users }) => {
 
                 <ModalBody bg="gray.50">
                   {users.map((user) => (
-                    <Flex key={user._id} mb={1} py={2}>
+                    <Flex
+                      key={user._id}
+                      mb={1}
+                      py={2}
+                      cursor="pointer"
+                      _hover={{ bg: "gray.100" }}
+                    >
                       <HStack>
                         <Avatar
                           size="sm"

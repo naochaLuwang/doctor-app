@@ -1,9 +1,9 @@
-import { Box, Heading, Flex, Text, Card, CardBody } from "@chakra-ui/react";
-import Image from "next/image";
-import React from "react";
-import Login from "../components/Auth/Login";
+import { Box, Card, CardBody, Flex, HStack, Text } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
+import Login from "../components/Auth/Login";
 
 const SignIn = () => {
   const { status } = useSession();
@@ -17,14 +17,13 @@ const SignIn = () => {
     <>
       {status === "unauthenticated" && (
         <Flex width="100%" height="100vh" bg="red">
-          {/* left */}
-          {/* <Box
+          <Flex
             flex="1"
-            bg="blue.500"
-            display={{ base: "none", md: "inline-flex" }}
-          ></Box> */}
-          {/* right */}
-          <Flex flex="1" align="center" justify="center" bg="gray.100">
+            align="center"
+            justify="center"
+            bg="gray.100"
+            direction="column"
+          >
             <Card>
               <CardBody bg="white" rounded="lg" shadow="md">
                 <Flex
@@ -70,6 +69,16 @@ const SignIn = () => {
                 </Flex>
               </CardBody>
             </Card>
+            <HStack mt={2}>
+              <Text>Powered by</Text>
+              <Link
+                href="https://relyhealthtech.com/home"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Rely Healthcare Technologies
+              </Link>
+            </HStack>
           </Flex>
         </Flex>
       )}

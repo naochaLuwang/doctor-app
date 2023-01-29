@@ -103,6 +103,10 @@ const Edit = ({ article }) => {
 
   let { FileInput, openFileDialog, uploadToS3, files } = useS3Upload();
 
+  useEffect(() => {
+    handleCategory();
+  }, []);
+
   let handleFileChanges = async (file) => {
     let { url } = await uploadToS3(file);
     setImageUrl(url);
@@ -206,10 +210,10 @@ const Edit = ({ article }) => {
 
   const handleCategory = async (e) => {
     setCategoryName("");
-    setCategory(e.target.value);
+    setCategory(article?.articleCatName || e.target.value);
 
     const subCategoryResponse = await axios.get(
-      `/api/subcategory/${e.target.value}`
+      `/api/subcategory/${article?.articleCatName || e.target.value}`
     );
 
     console.log(subCategoryResponse);

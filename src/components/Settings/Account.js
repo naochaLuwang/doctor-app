@@ -11,9 +11,29 @@ import {
   Text,
   UnorderedList,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
+import { useToast } from "@chakra-ui/react";
 
 const Account = () => {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
+  const toast = useToast();
+
+  const handleUpdatePassword = (e) => {
+    e.preventDefault();
+
+    if (password !== newPassword) {
+      return toast({
+        title: "Invalid Credentials",
+        description: "Password and new Password does not match",
+        status: "warning",
+        duration: 9000,
+        isClosable: true,
+      });
+    }
+  };
   return (
     <div style={{ width: "100%", height: "90vh" }}>
       <Flex direction="column" pb={20}>
@@ -43,9 +63,9 @@ const Account = () => {
                     borderColor: "blue.500",
                   }}
                   bg="gray.50"
-                  // value={firstName}
+                  value={currentPassword}
                   fontSize="sm"
-                  // onChange={(e) => setFirstName(e.target.value)}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
                 ></Input>
               </FormControl>
               <FormControl mt={2}>
@@ -67,9 +87,9 @@ const Account = () => {
                     borderColor: "blue.500",
                   }}
                   bg="gray.50"
-                  // value={lastName}
+                  value={password}
                   fontSize="sm"
-                  // onChange={(e) => setLastName(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                 ></Input>
               </FormControl>
 
@@ -92,11 +112,19 @@ const Account = () => {
                     borderColor: "blue.500",
                   }}
                   bg="gray.50"
-                  // value={email}
+                  value={newPassword}
                   fontSize="sm"
-                  // onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setNewPassword(e.target.value)}
                 ></Input>
               </FormControl>
+
+              <Button
+                mt={3}
+                colorScheme="facebook"
+                onClick={handleUpdatePassword}
+              >
+                Update Password
+              </Button>
             </Flex>
           </CardBody>
         </Card>
